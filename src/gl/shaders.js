@@ -79,7 +79,7 @@ void main() {
 
 const frag = /* glsl */ `
 uniform sampler2D uA;
-uniform vec3 uC;
+uniform vec3 uC, uAccent;
 uniform float uTime;
 varying float vG;
 varying float vR;
@@ -90,7 +90,8 @@ void main() {
   if (a < .12) discard;
   if (vR > .97) a *= .6 + .4 * sin(uTime * 4. + vR * 60.); // a few sparkles
   a *= .85 + vGlow * .5;
-  gl_FragColor = vec4(mix(uC, vec3(1.), vGlow * .6), a * .95);
+  float fleck = smoothstep(.91, 1., vR) * (.66 + .34 * sin(uTime * 2. + vR * 90.));
+  gl_FragColor = vec4(mix(mix(uC, uAccent, fleck), vec3(1.), vGlow * .6), a * (.78 + fleck * .22));
 }`;
 
 // uC holds raw sRGB numbers on purpose: the shader writes them straight to the canvas, so the hex looks exactly like the CSS color.
@@ -103,6 +104,7 @@ export function makeMaterial() {
     blending: AdditiveBlending,
     uniforms: {
       uMix: { value: 0 }, uIn: { value: 0 }, uPR: { value: 1 }, uC: { value: new Vector3(1, 1, 1) },
+      uAccent: { value: new Vector3(0.84, 0.95, 0.28) },
       uDen: { value: 1 }, uDis: { value: 1 }, uSp: { value: 0 }, uPx: { value: 0 }, uPy: { value: 0 },
       uTime: { value: 0 }, uA: { value: makeAtlas() },
       uMouse: { value: new Vector2() }, uBurstPos: { value: new Vector2() }, uAspect: { value: 1 }, uR: { value: 0.28 },

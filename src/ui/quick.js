@@ -17,6 +17,7 @@ export function initQuick() {
   el.addEventListener('click', (e) => {
     const a = e.target.closest('a[data-ch]');
     if (e.target.closest('.qk-x') || a) closeQuick();
+    if (e.target.closest('a[data-link]')) closeQuick();
     if (a) { e.preventDefault(); scrollToChapter(+a.dataset.ch); }
   });
   document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && !el.hidden) closeQuick(); });

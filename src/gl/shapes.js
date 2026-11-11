@@ -86,9 +86,14 @@ export const sample = (n, sampler) => {
 
 // The figure: head, neck, shoulders.
 export const BODY = [
-  [0.35, sph(0.5, 0, 1, 0)],
-  [0.05, cyl(0.18, 0.4, 0, 0.45, 0)],
-  [0.6, sph(1, 0, -0.25, 0, 0.95, 0.62, 0.45)],
+  [0.27, sph(0.54, 0, 1.03, 0, 0.82, 1.14, 0.72)], // skull and jaw
+  [0.045, sph(0.15, -0.39, 1.02, 0.04, 1.15, 0.46, 0.48)], // quiet profile cue
+  [0.08, sph(0.19, 0.42, 1.02, 0.02, 0.48, 0.78, 0.44)], // ear
+  [0.08, cyl(0.19, 0.42, 0, 0.42, 0)], // neck
+  [0.28, sph(0.9, 0, -0.13, 0, 1.12, 0.62, 0.54)], // shoulders
+  [0.21, sph(0.76, 0, -0.73, 0, 0.83, 0.82, 0.48)], // torso
+  [0.035, sph(0.43, -0.78, -0.38, 0, 0.6, 1.15, 0.58)], // left upper arm
+  [0.035, sph(0.43, 0.78, -0.38, 0, 0.6, 1.15, 0.58)], // right upper arm
 ];
 
 // ---- Stage 3b: chapter objects and the seven targets ----
@@ -99,10 +104,12 @@ export const SIDES = [1, -1, 1, -1, 1, -1, 1];
 // One recipe per chapter object, as a [weight, sampler] list. Every x is multiplied by m (the chapter's side,
 // scaled down on phones), so the object always sits on the screen-center side of the figure.
 const edu = (m) => [
-  [3, box(1.3, 0.07, 1.3, 0, 1.78, 0)], // mortarboard
-  [2, cyl(0.42, 0.26, 0, 1.6, 0)], // cap band
-  [1, cyl(0.02, 0.55, 0.62 * m, 1.4, 0)], // tassel
-  [2, box(1.1, 0.16, 0.16, -1 * m, -0.4, 0.6)], // diploma
+  [3, box(1.55, 0.075, 1.55, 0, 1.84, 0)], // mortarboard
+  [2, sph(0.42, 0, 1.62, 0, 1, 0.58, 1)], // cap crown
+  [2, cone(0.9, 1.52, 0, -0.32, 0)], // graduation gown
+  [1, cyl(0.018, 0.58, 0.66 * m, 1.42, 0)], // tassel
+  [2, cyl(0.1, 0.44, -1 * m, -0.48, 0.62)], // diploma
+  [1, box(0.27, 0.12, 0.2, -1 * m, -0.44, 0.62)], // diploma ribbon
 ];
 const exp = (m) => [
   [3, box(1.3, 0.06, 0.9, -1.3 * m, -0.6, 0.5)], // laptop base

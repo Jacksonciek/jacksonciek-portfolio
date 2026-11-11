@@ -12,7 +12,7 @@ const DEN = [1, 0.55, 0.55, 0.55, 0.55, 0.55, 1]; // glyph density per chapter: 
 const lerp = (a, b, t) => a + (b - a) * t;
 let canvas, renderer, camera, scene, group, points, geo, u, ptr;
 let T = [], pair = '', count = 0;
-let side = 1, phone = false, motion = true, baseZ = 5, offX = 1.9, intro = null;
+let side = 1, phone = false, motion = true, baseZ = 5, offX = 1.9, intro = null, zoomTo = 0;
 let chap = { i: 0, j: 0, e: 0 }; // last jl:chapter, kept so the scene can start from any scroll position
 let resolveReady;
 const ready = new Promise((r) => { resolveReady = r; }); // resolves true, or false when WebGL is unavailable
@@ -39,6 +39,7 @@ function place() {
 
 function frame(_, dt) {
   if (document.hidden) return; // paused while the tab is hidden
+  if (!document.getElementById('pg')?.hidden || !document.getElementById('quick')?.hidden || !document.getElementById('viewer')?.hidden) return;
   const s = Math.min(dt, 50) / 1000;
   const g = ptr.update(s, motion); // writes the pointer uniforms and returns the gaze
   if (motion) u.uTime.value += s * (1 - 0.7 * u.uHover.value); // frozen time = no drift, no sparkle; hover slows it
@@ -48,6 +49,8 @@ function frame(_, dt) {
     group.rotation.y += (-side * 0.35 + g.x * 0.3 - group.rotation.y) * k;
     group.rotation.x += (g.y * 0.15 - group.rotation.x) * k;
   } else group.rotation.set(0, 0, 0);
+  const wantedZ = baseZ - (motion ? zoomTo : 0);
+  camera.position.z += (wantedZ - camera.position.z) * (1 - Math.exp(-4.2 * s));
   renderer.render(scene, camera);
 }
 
@@ -68,6 +71,7 @@ function apply() {
   u.uDis.value = !motion ? 0 : i === 0 || i === 5 ? 2.6 : 1; // only Home to Education and Video to Contact dissolve fully
 }
 document.addEventListener('jl:chapter', (ev) => { chap = ev.detail; apply(); }); // registered at import time: no event is missed
+document.addEventListener('jl:chapter', () => gl.setColor(getComputedStyle(document.documentElement).getPropertyValue('--ac')));
 
 // Phones pull the objects toward the centered figure so they never clip. Same point count, new positions.
 function rebuild() {
@@ -88,6 +92,7 @@ export const gl = {
   setMix(e) { if (u) u.uMix.value = e; },
   setDensity(v) { if (u) u.uDen.value = v; },
   setSpin(v) { if (u) u.uSp.value = v; },
+  setZoom(v) { zoomTo = Math.max(0, Math.min(1, v)) * 0.9; },
   setHover(on) { ptr?.setHover(on); }, // eases uHover 0 to 1; also wired to every [data-disperse] element
   setSide(s) { side = s; if (group) place(); }, // -1 left, +1 right; fractions are fine
   setColor(hex) { // 6-digit hex like '#cdbfff'
