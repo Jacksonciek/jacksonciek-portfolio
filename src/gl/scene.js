@@ -4,12 +4,13 @@ import { COUNTS } from '../config.js';
 import { motionOn } from '../core/motion.js';
 import { buildTargets, SIDES } from './shapes.js';
 import { makeMaterial } from './shaders.js';
+import { createInteraction } from './interaction.js';
 
 const phoneMQ = matchMedia('(max-width:760px)'); // same breakpoint as the CSS layout
 const TAN = Math.tan((45 / 2) * (Math.PI / 180)); // half of the 45deg field of view
 const DEN = [1, 0.55, 0.55, 0.55, 0.55, 0.55, 1]; // glyph density per chapter: heavy glyphs on the plain figure
 const lerp = (a, b, t) => a + (b - a) * t;
-let canvas, renderer, camera, scene, group, points, geo, u;
+let canvas, renderer, camera, scene, group, points, geo, u, ptr;
 let T = [], pair = '', count = 0;
 let side = 1, phone = false, motion = true, baseZ = 5, offX = 1.9, intro = null;
 let chap = { i: 0, j: 0, e: 0 }; // last jl:chapter, kept so the scene can start from any scroll position
@@ -25,6 +26,7 @@ function layout() {
   camera.position.z = baseZ = camera.aspect < 1 ? 6.4 : 5;
   camera.updateProjectionMatrix();
   u.uPR.value = renderer.getPixelRatio();
+  u.uAspect.value = camera.aspect;
   const halfW = TAN * baseZ * camera.aspect; // half of the visible width at the figure's depth
   offX = Math.min(1.9, halfW * 0.55, halfW * 0.97 - 0.95); // 0.95 = shoulder half-width: never clipped by the right edge
   place();
@@ -37,10 +39,15 @@ function place() {
 
 function frame(_, dt) {
   if (document.hidden) return; // paused while the tab is hidden
-  if (motion) u.uTime.value += Math.min(dt, 50) / 1000; // frozen time = no drift, no sparkle
-  // The figure turns toward the text. Motion off: no turn. (Stage 4 replaces this target with the gaze.)
-  const k = 1 - Math.exp((-3.7 * Math.min(dt, 50)) / 1000);
-  group.rotation.y = motion ? group.rotation.y + (-side * 0.35 - group.rotation.y) * k : 0;
+  const s = Math.min(dt, 50) / 1000;
+  const g = ptr.update(s, motion); // writes the pointer uniforms and returns the gaze
+  if (motion) u.uTime.value += s * (1 - 0.7 * u.uHover.value); // frozen time = no drift, no sparkle; hover slows it
+  // The figure turns toward the text and leans toward the pointer (gaze). Motion off: no turn.
+  const k = 1 - Math.exp(-3.7 * s);
+  if (motion) {
+    group.rotation.y += (-side * 0.35 + g.x * 0.3 - group.rotation.y) * k;
+    group.rotation.x += (g.y * 0.15 - group.rotation.x) * k;
+  } else group.rotation.set(0, 0, 0);
   renderer.render(scene, camera);
 }
 
@@ -81,6 +88,7 @@ export const gl = {
   setMix(e) { if (u) u.uMix.value = e; },
   setDensity(v) { if (u) u.uDen.value = v; },
   setSpin(v) { if (u) u.uSp.value = v; },
+  setHover(on) { ptr?.setHover(on); }, // eases uHover 0 to 1; also wired to every [data-disperse] element
   setSide(s) { side = s; if (group) place(); }, // -1 left, +1 right; fractions are fine
   setColor(hex) { // 6-digit hex like '#cdbfff'
     const n = parseInt(hex.trim().slice(1), 16);
@@ -126,6 +134,7 @@ export async function initGL(onProgress = () => {}) {
     window.addEventListener('resize', () => { layout(); renderer.render(scene, camera); });
     phoneMQ.addEventListener('change', () => { rebuild(); apply(); });
     document.addEventListener('jl:motion', (e) => { motion = e.detail; if (!motion) intro?.progress(1); apply(); });
+    ptr = createInteraction(u);
     gsap.ticker.add(frame);
     onProgress(1);
     resolveReady(true);
