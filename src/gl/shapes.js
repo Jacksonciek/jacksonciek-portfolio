@@ -2,6 +2,35 @@
 // Signature: primitive(size args, then x, y, z of its center). Stage 3b builds the chapter objects from these.
 const TAU = Math.PI * 2;
 const rand = Math.random;
+let portraitPool = null;
+
+// The uploaded silhouette is a visual seed, not a live photograph shown to visitors.
+// White pixels are the source background; dark and gold pixels become the particle field.
+export async function loadPortraitPool(src = '/media/3d-avatar.png') {
+  try {
+    const image = new Image();
+    image.src = src;
+    await image.decode();
+    const canvas = document.createElement('canvas');
+    canvas.width = 240;
+    canvas.height = Math.round(240 * image.height / image.width);
+    const ctx = canvas.getContext('2d', { willReadFrequently: true });
+    ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
+    const { data } = ctx.getImageData(0, 0, canvas.width, canvas.height);
+    const pixels = [];
+    for (let y = 0; y < canvas.height; y++) for (let x = 0; x < canvas.width; x++) {
+      const i = (y * canvas.width + x) * 4;
+      const r = data[i], g = data[i + 1], b = data[i + 2];
+      const luma = r * .2126 + g * .7152 + b * .0722;
+      const gold = r > 105 && g > 90 && b < 125 && r > g * 1.08;
+      if (luma < 150 || gold) pixels.push(x, y, luma, gold ? 1 : 0);
+    }
+    if (pixels.length > 1200) portraitPool = { pixels, width: canvas.width, height: canvas.height };
+  } catch (error) {
+    console.warn('Portrait particles unavailable; using the procedural figure.', error);
+  }
+  return portraitPool;
+}
 
 // Ellipsoid surface; (sx, sy, sz) scale the radius per axis.
 export const sph = (r, x = 0, y = 0, z = 0, sx = 1, sy = 1, sz = 1) => (out, o) => {
@@ -139,9 +168,31 @@ const OBJECTS = [null, edu, exp, prj, dsn, vid, null]; // home and contact: the 
 // One Float32Array (n points) per chapter. The first 60% of the points are the SAME body samples in every chapter,
 // so the figure holds still and only the object morphs. The last 40% are the chapter's object (Home and Contact
 // use more body there). compress < 1 pulls the objects toward the figure (phones: centered figure, narrow screen).
-export function buildTargets(n, compress = 1) {
-  const body = sample(n, pick(BODY)), nb = Math.round(n * 0.6);
-  return OBJECTS.map((make, c) => {
+function samplePortrait(n, pool, compress = 1, gold = new Float32Array(n)) {
+  const out = new Float32Array(n * 3);
+  const step = 4;
+  for (let i = 0; i < n; i++) {
+    const k = Math.floor(rand() * (pool.pixels.length / step)) * step;
+    const x = pool.pixels[k], y = pool.pixels[k + 1], luma = pool.pixels[k + 2];
+    // Give the portrait a softly rounded volume so it still reads when the head turns.
+    // The uploaded image remains the silhouette map; depth is inferred from its horizontal profile.
+    const across = ((x / pool.width) - .5) * 2;
+    const depth = Math.sqrt(Math.max(0, 1 - across * across)) * .36;
+    const z = (rand() * 2 - 1) * depth + (.5 - luma / 255) * .28;
+    out[i * 3] = ((x / pool.width) - .5) * 2.35 * compress;
+    out[i * 3 + 1] = (.5 - y / pool.height) * 2.52 * compress;
+    out[i * 3 + 2] = z;
+    gold[i] = pool.pixels[k + 3];
+  }
+  return out;
+}
+
+export function buildTargets(n, compress = 1, pool = portraitPool) {
+  const tone = new Float32Array(n);
+  const body = pool ? samplePortrait(n, pool, compress, tone) : sample(n, pick(BODY));
+  const nb = Math.round(n * 0.6);
+  tone.fill(0, nb);
+  const targets = OBJECTS.map((make, c) => {
     const t = body.slice();
     if (make) {
       const obj = pick(make(SIDES[c] * compress));
@@ -149,4 +200,6 @@ export function buildTargets(n, compress = 1) {
     }
     return t;
   });
+  targets.portraitGold = tone;
+  return targets;
 }

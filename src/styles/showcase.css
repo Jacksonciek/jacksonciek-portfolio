@@ -121,11 +121,6 @@ body.ready #home .hero-line.appear:not(.is-in) .hero-line-in{animation:hero-line
 .step-count{display:flex;justify-content:flex-end}
 
 /* Project zoom panel */
-#zoom{position:fixed;inset:0;z-index:5;display:grid;place-items:center;overflow:hidden;visibility:hidden;opacity:0;clip-path:inset(30% 10% 30% 52% round 14px);background:radial-gradient(ellipse at 72% 22%,rgba(193,167,255,.28),transparent 33%),radial-gradient(ellipse at 18% 84%,rgba(216,243,107,.16),transparent 34%),linear-gradient(125deg,#171429,#34244d 60%,#172b35);transition:opacity 220ms var(--ease-out),visibility 0s linear 220ms}
-#zoom.zoom-on{visibility:visible;opacity:1;transition:opacity 220ms var(--ease-out)}
-.zoom-card{display:grid;gap:1.1rem;width:min(650px,82vw);padding:clamp(2rem,6vw,5rem);border:1px solid rgba(255,255,255,.17);border-radius:26px;background:rgba(19,17,37,.38);backdrop-filter:blur(16px);box-shadow:var(--shadow-deep)}
-.zoom-card>.meta{color:var(--lime)}.zoom-card h3{max-width:12ch;font-size:clamp(2.2rem,5vw,5.5rem);line-height:.94;letter-spacing:-.07em}.zoom-card p{max-width:35rem;color:rgba(245,243,247,.75)}.zoom-card .btn{width:max-content}
-
 /* Full screen pages, work viewer and shared page system */
 #pg{position:fixed;inset:0;z-index:25;overflow:auto;overscroll-behavior:contain;background:linear-gradient(135deg,rgba(29,25,53,.96),rgba(47,33,67,.95) 54%,rgba(24,43,51,.96));backdrop-filter:blur(24px) saturate(130%);padding:0 max(6vw,calc((100vw - 1440px)/2)) calc(4rem + env(safe-area-inset-bottom));}
 .pg-shell{width:100%;max-width:1440px;margin:0 auto;min-height:100%;padding-top:clamp(76px,9vw,116px)}

@@ -1,13 +1,13 @@
 /* Z-INDEX LAYERS (every stage obeys this block)
-   #hero-video 0 | #gl 1 | main 2 | #zoom 5 | #pg 25 | #menu 28 | #pill 30
+   #hero-video 0 | #gl 1 | main 2 | #pg 25 | #menu 28 | #pill 30
    #quick and #viewer 40 | #splash 50 | .skip 60 (skip link stays reachable during the splash) */
 :root{
   color-scheme:dark;
-  --bg:#3a4160; --ac:#e6ecfa; --tx:#f5f3f7; --ink:#1d1a2b; --splash:#2c3250;
-  --g-id-bg:#3a4160; --g-id-ac:#e6ecfa; --g-eng-bg:#4b4078; --g-eng-ac:#cdbfff;
-  --g-cre-bg:#7b4b63; --g-cre-ac:#ffc2ad;
+  --bg:#090b0a; --ac:#05f28a; --tx:#f5f7f6; --ink:#090b0a; --splash:#090b0a;
+  --g-id-bg:#090b0a; --g-id-ac:#05f28a; --g-eng-bg:#090b0a; --g-eng-ac:#05f28a;
+  --g-cre-bg:#090b0a; --g-cre-ac:#05f28a;
   --glass:rgba(255,255,255,.13); --glass-line:rgba(255,255,255,.24);
-  --f-sans:"Bricolage Grotesque",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --f-sans:"SF Pro Display","SF Pro Text",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
   --f-serif:"Instrument Serif","Times New Roman",serif;
   --f-mono:"SF Mono",Menlo,Consolas,"Liberation Mono",monospace;
   --ease-out:cubic-bezier(.23,1,.32,1); --ease-in-out:cubic-bezier(.77,0,.175,1);

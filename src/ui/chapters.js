@@ -51,7 +51,7 @@ function build() {
         tl.to(fx, { y: -20, opacity: 0, duration: 0.1, stagger: 0.007 }, 0.8);
       }
       addCounters(tl, ch);
-      tl.set({}, {}, 1); // pad to exactly 1 so timeline progress equals chapter progress
+      tl.call(() => {}, [], 1); // keep progress normalized to the full chapter without a dummy GSAP target
     });
   });
 }
@@ -80,6 +80,16 @@ function initEmitter() {
     onUpdate: (self) => emit(self.scroll()),
   });
 }
+
+// Routed project pages can leave the scroll-scrubbed Home exit styles inline.
+// Clear them on return so the hero is readable again at scroll position zero.
+document.addEventListener('jl:home-return', () => {
+  document.querySelectorAll('#home .fx').forEach((el) => {
+    el.style.removeProperty('opacity');
+    el.style.removeProperty('transform');
+    el.classList.add('is-in');
+  });
+});
 
 export function initChapters() {
   initEmitter();

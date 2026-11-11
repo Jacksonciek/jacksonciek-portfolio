@@ -2,8 +2,8 @@ import { gsap } from 'gsap';
 import { lock, unlock } from '../core/scroll.js';
 import { motionOn } from '../core/motion.js';
 
-const LABELS = ['Loading type', 'Building the scene', 'Mapping the story', 'Ready to explore'];
-const MIN = 1100, MAX = 3800, KEY = 'jl-splash';
+const LABELS = ['Collecting the details', 'Building the scene', 'Connecting the ideas', 'Ready to explore'];
+const MIN = 900, MAX = 3400, KEY = 'jl-splash';
 let el, countEl, labelEl, barEl, t0, target = 0, shown = 0, ready = false, gone = false, lastK = -1;
 const done = () => document.dispatchEvent(new CustomEvent('jl:splash-done'));
 

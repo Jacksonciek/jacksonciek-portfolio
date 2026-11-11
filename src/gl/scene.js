@@ -2,7 +2,7 @@ import { WebGLRenderer, PerspectiveCamera, Scene, Group, Points, BufferGeometry,
 import { gsap } from 'gsap';
 import { COUNTS } from '../config.js';
 import { motionOn } from '../core/motion.js';
-import { buildTargets, SIDES } from './shapes.js';
+import { buildTargets, loadPortraitPool, SIDES } from './shapes.js';
 import { makeMaterial } from './shaders.js';
 import { createInteraction } from './interaction.js';
 
@@ -12,7 +12,7 @@ const DEN = [1, 0.55, 0.55, 0.55, 0.55, 0.55, 1]; // glyph density per chapter: 
 const lerp = (a, b, t) => a + (b - a) * t;
 let canvas, renderer, camera, scene, group, points, geo, u, ptr;
 let T = [], pair = '', count = 0;
-let side = 1, phone = false, motion = true, baseZ = 5, offX = 1.9, intro = null, zoomTo = 0;
+let side = 1, phone = false, motion = true, baseZ = 5, offX = 1.9, intro = null;
 let chap = { i: 0, j: 0, e: 0 }; // last jl:chapter, kept so the scene can start from any scroll position
 let resolveReady;
 const ready = new Promise((r) => { resolveReady = r; }); // resolves true, or false when WebGL is unavailable
@@ -28,13 +28,23 @@ function layout() {
   u.uPR.value = renderer.getPixelRatio();
   u.uAspect.value = camera.aspect;
   const halfW = TAN * baseZ * camera.aspect; // half of the visible width at the figure's depth
-  offX = Math.min(1.9, halfW * 0.55, halfW * 0.97 - 0.95); // 0.95 = shoulder half-width: never clipped by the right edge
+  offX = Math.min(2.1, halfW * 0.55, halfW * 0.97 - 1.15); // preserve a wider margin around the larger shoulders
   place();
 }
 
 function place() {
-  group.position.set(phone ? 0 : side * offX, phone ? 0.9 : -0.3, 0); // desktop y -0.3 centers the figure and keeps the mortarboard (y 1.78) below the top edge
-  group.scale.setScalar(phone ? 0.72 : 1);
+  group.position.set(phone ? 0 : side * offX, phone ? 1.35 : -0.3, 0); // leave a clean text lane under the head on phones
+  group.scale.setScalar(phone ? 0.9 : 1.18);
+}
+
+function updateAvatarAttributes() {
+  if (!geo) return;
+  const head = new Float32Array(count), bodyCount = Math.round(count * .6);
+  // The image's full head and face occupy roughly its upper half, above the shoulders.
+  // Only the shared body particles turn, so chapter objects remain on their own morph path.
+  for (let i = 0; i < bodyCount; i++) head[i] = T[0][i * 3 + 1] > .05 ? 1 : 0;
+  geo.setAttribute('aHead', new BufferAttribute(head, 1));
+  geo.setAttribute('aGold', new BufferAttribute(T.portraitGold || new Float32Array(count), 1));
 }
 
 function frame(_, dt) {
@@ -46,11 +56,11 @@ function frame(_, dt) {
   // The figure turns toward the text and leans toward the pointer (gaze). Motion off: no turn.
   const k = 1 - Math.exp(-3.7 * s);
   if (motion) {
-    group.rotation.y += (-side * 0.35 + g.x * 0.3 - group.rotation.y) * k;
-    group.rotation.x += (g.y * 0.15 - group.rotation.x) * k;
-  } else group.rotation.set(0, 0, 0);
-  const wantedZ = baseZ - (motion ? zoomTo : 0);
-  camera.position.z += (wantedZ - camera.position.z) * (1 - Math.exp(-4.2 * s));
+    group.rotation.y += (-side * 0.32 + g.x * 0.48 - group.rotation.y) * k;
+    group.rotation.x += (g.y * 0.24 - group.rotation.x) * k;
+    u.uLook.value.set(g.x, g.y);
+  } else { group.rotation.set(0, 0, 0); u.uLook.value.set(0, 0); }
+  camera.position.z += (baseZ - camera.position.z) * (1 - Math.exp(-4.2 * s));
   renderer.render(scene, camera);
 }
 
@@ -68,7 +78,8 @@ function apply() {
   gl.setMix(e);
   gl.setDensity(lerp(DEN[i], DEN[j], e));
   gl.setSide(lerp(SIDES[i], SIDES[j], e));
-  u.uDis.value = !motion ? 0 : i === 0 || i === 5 ? 2.6 : 1; // only Home to Education and Video to Contact dissolve fully
+  // Points travel directly between targets; the small spread adds air without a dissolve or camera pullback.
+  u.uDis.value = motion ? 0.22 : 0;
 }
 document.addEventListener('jl:chapter', (ev) => { chap = ev.detail; apply(); }); // registered at import time: no event is missed
 document.addEventListener('jl:chapter', () => gl.setColor(getComputedStyle(document.documentElement).getPropertyValue('--ac')));
@@ -76,6 +87,7 @@ document.addEventListener('jl:chapter', () => gl.setColor(getComputedStyle(docum
 // Phones pull the objects toward the centered figure so they never clip. Same point count, new positions.
 function rebuild() {
   T = buildTargets(count, phoneMQ.matches ? 0.55 : 1);
+  updateAvatarAttributes();
   pair = ''; // forces the next setTargets to upload
 }
 
@@ -92,7 +104,6 @@ export const gl = {
   setMix(e) { if (u) u.uMix.value = e; },
   setDensity(v) { if (u) u.uDen.value = v; },
   setSpin(v) { if (u) u.uSp.value = v; },
-  setZoom(v) { zoomTo = Math.max(0, Math.min(1, v)) * 0.9; },
   setHover(on) { ptr?.setHover(on); }, // eases uHover 0 to 1; also wired to every [data-disperse] element
   setSide(s) { side = s; if (group) place(); }, // -1 left, +1 right; fractions are fine
   setColor(hex) { // 6-digit hex like '#cdbfff'
@@ -120,12 +131,14 @@ export async function initGL(onProgress = () => {}) {
     onProgress(0.3);
 
     count = phone ? COUNTS.mobile : COUNTS.desktop; // fixed at start; a resize does not change the count
+    await loadPortraitPool();
     T = buildTargets(count, phone ? 0.55 : 1);
     const rnd = new Float32Array(count).map(Math.random);
     geo = new BufferGeometry();
     geo.setAttribute('position', new BufferAttribute(T[0].slice(), 3));
     geo.setAttribute('aB', new BufferAttribute(T[0].slice(), 3));
     geo.setAttribute('aR', new BufferAttribute(rnd, 1));
+    updateAvatarAttributes();
     points = new Points(geo, material);
     points.frustumCulled = false; // the shader moves the points far outside the original bounds
     group.add(points);

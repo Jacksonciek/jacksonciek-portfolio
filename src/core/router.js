@@ -56,6 +56,7 @@ export function initRouter({ sheet } = {}) {
       if (locked) { unlock(); locked = false; }
       if (location.hash) requestAnimationFrame(() => document.querySelector(location.hash)?.scrollIntoView({ behavior: 'smooth', block: 'start' }));
       else if (wasPage || scrollY > innerHeight * .5) scrollToChapter(0);
+      if (wasPage) requestAnimationFrame(() => document.dispatchEvent(new CustomEvent('jl:home-return')));
       opener?.focus?.({ preventScroll: true }); opener = null;
       return;
     }

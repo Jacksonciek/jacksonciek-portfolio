@@ -1,6 +1,6 @@
 import { CanvasTexture, ShaderMaterial, AdditiveBlending, Vector2, Vector3 } from 'three';
 
-const GLYPHS = '.:·+/#%▓'; // light to heavy; the vertex shader picks the cell from density (uDen)
+const GLYPHS = ' .:·+/#%'; // light to heavy; the vertex shader picks the cell from density (uDen)
 const CELL = 64;
 
 // 512x64 atlas, 8 cells of 64px. Only the alpha channel is read, so the glyphs are plain white.
@@ -20,12 +20,16 @@ function makeAtlas() {
 const vert = /* glsl */ `
 attribute vec3 aB;
 attribute float aR;
+attribute float aHead;
+attribute float aGold;
 uniform float uMix, uIn, uPR, uDen, uDis, uSp, uPx, uPy, uTime;
 uniform vec2 uMouse, uBurstPos; // NDC
+uniform vec2 uLook;
 uniform float uAspect, uR, uForce, uGlow, uHover, uBurst;
 varying float vG;
 varying float vR;
 varying float vGlow;
+varying float vGold;
 
 // Random unit vector from one random number (the same point always gets the same direction).
 vec3 dir(float s) {
@@ -39,6 +43,14 @@ void main() {
   vec3 p = mix(position, aB, uMix);
   p += dir(aR) * sin(3.14159265 * uMix) * uDis * (1.2 + aR);
   p += vec3(sin(uTime * (.4 + aR * .8) + aR * 40.), cos(uTime * (.5 + aR * .7) + aR * 70.), sin(uTime * (.3 + aR * .9) + aR * 25.)) * .015;
+
+  // Turn only the stable head points. The torso and chapter objects stay on their direct morph path.
+  vec3 hp = p - vec3(0., .84, 0.);
+  float hy = clamp(uLook.x, -1., 1.) * .28;
+  float hx = clamp(uLook.y, -1., 1.) * .12;
+  float cy = cos(hy), sy = sin(hy), cx = cos(hx), sx = sin(hx);
+  vec3 turnedHead = vec3(hp.x * cy + hp.z * sy, hp.y * cx - hp.z * sx, -hp.x * sy + hp.z * cy);
+  p = mix(p, vec3(0., .84, 0.) + turnedHead, aHead);
 
   // Hovering a call to action: every point drifts outward from the figure's center.
   p += normalize(p - vec3(uPx, .3, 0.) + dir(aR) * .5) * uHover * (1.5 + aR * 2.);
@@ -56,8 +68,9 @@ void main() {
 
   vG = min(7., floor(aR * 4. + uDen * 4.));
   vR = aR;
+  vGold = aGold;
   vec4 mv = modelViewMatrix * vec4(p, 1.);
-  gl_PointSize = 9. * uPR * (.7 + aR * .6) * (6. / -mv.z);
+  gl_PointSize = 4.6 * uPR * (.72 + aR * .55) * (6. / -mv.z);
   vec4 clip = projectionMatrix * mv;
 
   // Pointer, in screen space (NDC with x scaled by the aspect, so distances are round): points near it swell and get pushed away.
@@ -84,14 +97,16 @@ uniform float uTime;
 varying float vG;
 varying float vR;
 varying float vGlow;
+varying float vGold;
 
 void main() {
   float a = texture2D(uA, vec2((vG + gl_PointCoord.x) / 8., 1. - gl_PointCoord.y)).a; // 1. - y: canvas textures are flipped
   if (a < .12) discard;
   if (vR > .97) a *= .6 + .4 * sin(uTime * 4. + vR * 60.); // a few sparkles
   a *= .85 + vGlow * .5;
-  float fleck = smoothstep(.91, 1., vR) * (.66 + .34 * sin(uTime * 2. + vR * 90.));
-  gl_FragColor = vec4(mix(mix(uC, uAccent, fleck), vec3(1.), vGlow * .6), a * (.78 + fleck * .22));
+  float fleck = max(smoothstep(.94, 1., vR) * (.66 + .34 * sin(uTime * 2. + vR * 90.)), vGold * .9);
+  vec3 bodyTone = mix(uC, vec3(.68, .94, .8), .36);
+  gl_FragColor = vec4(mix(mix(bodyTone, uAccent, fleck), vec3(1.), vGlow * .6), a * (.88 + fleck * .2));
 }`;
 
 // uC holds raw sRGB numbers on purpose: the shader writes them straight to the canvas, so the hex looks exactly like the CSS color.
@@ -104,9 +119,9 @@ export function makeMaterial() {
     blending: AdditiveBlending,
     uniforms: {
       uMix: { value: 0 }, uIn: { value: 0 }, uPR: { value: 1 }, uC: { value: new Vector3(1, 1, 1) },
-      uAccent: { value: new Vector3(0.84, 0.95, 0.28) },
+      uAccent: { value: new Vector3(0.92, 0.75, 0.28) },
       uDen: { value: 1 }, uDis: { value: 1 }, uSp: { value: 0 }, uPx: { value: 0 }, uPy: { value: 0 },
-      uTime: { value: 0 }, uA: { value: makeAtlas() },
+      uTime: { value: 0 }, uA: { value: makeAtlas() }, uLook: { value: new Vector2() },
       uMouse: { value: new Vector2() }, uBurstPos: { value: new Vector2() }, uAspect: { value: 1 }, uR: { value: 0.28 },
       uForce: { value: 0 }, uGlow: { value: 0 }, uHover: { value: 0 }, uBurst: { value: 0 },
     },

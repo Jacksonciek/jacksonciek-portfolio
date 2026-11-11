@@ -2,7 +2,6 @@ import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { motionOn } from '../core/motion.js';
 import toolkit from '../content/toolkit.json';
-import projectData from '../content/projects.json';
 
 gsap.registerPlugin(ScrollTrigger);
 const TAU = Math.PI * 2;
@@ -37,6 +36,13 @@ function prepareDecorativeContent() {
 function experience(t) {
   const steps = [...document.querySelectorAll('#experience .step')];
   if (steps.length < 2) return;
+  const consolePanel = document.querySelector('.agent-console');
+  if (consolePanel && matchMedia('(max-width:760px)').matches) {
+    const reveal = smooth(.5, .68, t);
+    consolePanel.style.opacity = String(reveal);
+    consolePanel.style.visibility = reveal > .02 ? 'visible' : 'hidden';
+    consolePanel.style.transform = `translateY(${(1 - reveal) * 14}px)`;
+  }
   const a = 1 - smooth(.4, .55, t), b = smooth(.45, .6, t);
   steps[0].style.setProperty('--step-opacity', String(a));
   steps[1].style.setProperty('--step-opacity', String(b));
@@ -47,33 +53,29 @@ function experience(t) {
   const line = document.querySelector('[data-mini-ui]');
   if (!line) return;
   const question = '> Which tools did Jackson use for RAG?';
-  if (t < .5) line.textContent = question.slice(0, Math.round(question.length * smooth(.05, .45, t))) + (t > .45 ? '  | 3 chunks' : '');
-  else line.textContent = `queue depth ${Math.round(smooth(.55, .95, t) * 128)} msgs`;
+  if (t < .52) line.textContent = question;
+  else line.textContent = `queue depth ${Math.max(1, Math.round(smooth(.55, .95, t) * 128))} msgs`;
 }
 
 function updateProjects(t) {
-  const panel = document.getElementById('zoom');
-  if (!panel) return;
-  const amount = smooth(.28, .8, t);
-  const visible = t >= .22 && t <= .97;
-  panel.style.setProperty('--zoom', String(amount));
-  const inset = 1 - amount;
-  panel.style.clipPath = `inset(${30 * inset}% ${10 * inset}% ${30 * inset}% ${52 * inset}% round ${14 * inset}px)`;
-  panel.classList.toggle('zoom-on', visible);
-  panel.setAttribute('aria-hidden', String(!visible));
-  panel.inert = !visible;
-  panel.style.pointerEvents = visible && amount > .95 ? 'auto' : 'none';
+  const track = document.querySelector('[data-project-rail]');
+  if (!track) return;
+  const viewport = track.parentElement;
+  const distance = Math.max(0, track.scrollWidth - viewport.clientWidth);
+  const travel = smooth(.28, .98, t);
+  track.style.transform = motionOn() ? `translate3d(${-travel * distance}px,0,0)` : '';
+  const count = track.children.length;
+  const index = Math.min(count, Math.max(1, Math.round(1 + travel * (count - 1))));
+  const counter = document.querySelector('[data-rail-count]');
+  if (counter) counter.textContent = `${String(index).padStart(2, '0')} / ${String(count).padStart(2, '0')}`;
 }
 
-function prepareZoom() {
-  const target = document.querySelector('[data-featured-project]');
-  if (!target || target.children.length) return;
-  const project = projectData.find((item) => item.slug === 'multilingual-hate-speech-detection');
-  if (!project) return;
-  const heading = document.createElement('h3'); heading.textContent = project.title;
-  const summary = document.createElement('p'); summary.textContent = 'Multilingual NLP research on Indonesian-English code-mixed text, with multi-task learning and BLOOM-560M.';
-  const open = document.createElement('a'); open.href = `/projects/${project.slug}`; open.dataset.link = ''; open.className = 'btn btn--primary'; open.textContent = 'Open project';
-  target.append(heading, summary, open);
+function design(t) {
+  const macbook = document.querySelector('[data-macbook]');
+  if (!macbook) return;
+  const opened = smooth(.015, .2, t);
+  macbook.style.setProperty('--lid-open', String(opened));
+  macbook.style.setProperty('--screen-arrive', String(smooth(.13, .34, t)));
 }
 
 function video(t) {
@@ -97,13 +99,24 @@ function contact(t) {
 }
 
 function resetStatic() {
-  gl.setSpin(0); gl.setZoom(0);
+  gl.setSpin(0);
   const steps = [...document.querySelectorAll('#experience .step')];
   steps.forEach((step) => { step.style.removeProperty('--step-opacity'); step.removeAttribute('aria-hidden'); });
   const counter = document.querySelector('[data-step-count]'); if (counter) counter.textContent = '02 / 02';
   const line = document.querySelector('[data-mini-ui]'); if (line) line.textContent = 'queue depth 128 msgs';
-  const panel = document.getElementById('zoom');
-  if (panel) { panel.classList.remove('zoom-on'); panel.setAttribute('aria-hidden', 'true'); panel.inert = true; }
+  const consolePanel = document.querySelector('.agent-console');
+  if (consolePanel) {
+    if (motionOn() && matchMedia('(max-width:760px)').matches) {
+      consolePanel.style.opacity = '0'; consolePanel.style.visibility = 'hidden'; consolePanel.style.transform = 'translateY(14px)';
+    } else {
+      consolePanel.style.removeProperty('opacity'); consolePanel.style.removeProperty('visibility'); consolePanel.style.removeProperty('transform');
+    }
+  }
+  const macbook = document.querySelector('[data-macbook]');
+  if (macbook) macbook.style.setProperty('--lid-open', motionOn() ? '0' : '1');
+  if (macbook) macbook.style.setProperty('--screen-arrive', motionOn() ? '0' : '1');
+  const rail = document.querySelector('[data-project-rail]'); if (rail) rail.style.transform = '';
+  const railCount = document.querySelector('[data-rail-count]'); if (railCount) railCount.textContent = '01 / 06';
   document.querySelectorAll('.contact-mark span').forEach((letter, i) => {
     if (i !== 0 && i !== 8) { letter.style.maxWidth = '.72em'; letter.style.opacity = '1'; }
   });
@@ -118,17 +131,22 @@ function build() {
       onUpdate: (self) => { if (motionOn()) onUpdate(self.progress); },
       onRefresh: (self) => { if (motionOn()) onUpdate(self.progress); },
     });
-    add('education', (t) => { gl.setSpin(smooth(.1, .8, t) * TAU); gl.setZoom(Math.sin(Math.PI * t)); });
+    add('education', (t) => { gl.setSpin(smooth(.1, .8, t) * TAU); });
     add('experience', experience);
     add('projects', updateProjects);
+    add('design', design);
     add('video', video);
     add('contact', contact);
+    const officeReveal = gsap.utils.toArray('.office-intro > *, .office-scene, .foot-connect-copy > *, .social-tile');
+    gsap.fromTo(officeReveal, { y: 24, opacity: 0 }, {
+      y: 0, opacity: 1, duration: .75, stagger: .055, ease: 'power3.out',
+      scrollTrigger: { trigger: '.ai-office', start: 'top 82%', once: true },
+    });
   });
 }
 
 export function initChapterFeatures() {
   prepareDecorativeContent();
-  prepareZoom();
   import('../gl/scene.js').then((scene) => {
     gl = scene.gl;
     resetStatic();
