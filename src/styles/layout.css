@@ -1,0 +1,28 @@
+main{position:relative;z-index:2}
+#gl{position:fixed;inset:0;width:100%;height:100%;z-index:1;pointer-events:none}
+
+.ch{position:relative;height:220vh}
+.stage{position:sticky;top:0;height:100vh;height:100dvh;display:grid;align-items:center;column-gap:4vw;padding:0 var(--pad-x)}
+.L>.stage{grid-template-columns:minmax(0,34rem) 1fr}
+.R>.stage{grid-template-columns:1fr minmax(0,34rem)}
+.L .txt{grid-column:1}
+.R .txt{grid-column:2}
+.txt{display:flex;flex-direction:column;align-items:flex-start;gap:1rem;min-width:0}
+
+.btns{display:flex;flex-wrap:wrap;gap:.75rem}
+.stats{display:flex;flex-wrap:wrap;gap:.75rem 2rem}
+.stats b{display:block;font-size:1.6rem;line-height:1.1}
+.steps{display:grid;gap:1.1rem}
+.step{display:grid;gap:.35rem;justify-items:start}
+.chips{display:flex;flex-wrap:wrap;gap:.4rem}
+
+.foot{position:relative;z-index:2;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:1.25rem 2rem;padding:3rem var(--pad-x) calc(2.5rem + env(safe-area-inset-bottom))}
+.foot ul{display:flex;flex-wrap:wrap;gap:.25rem 1.5rem}
+.foot a{display:inline-flex;align-items:center;min-height:44px}
+
+@media (max-width:760px){
+  .stage{align-items:end;padding-bottom:max(1.5rem,env(safe-area-inset-bottom))}
+  .L>.stage,.R>.stage{grid-template-columns:minmax(0,1fr)}
+  .L .txt,.R .txt{grid-column:1}
+  .stats{flex-direction:column}
+}

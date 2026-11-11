@@ -1,0 +1,13 @@
+/* Hover, ambient and chrome motion. Scroll-scrubbed motion lives in JS (chapters.js).
+   Reduced motion or the footer Motion toggle (body.nm): gentler, not zero.
+   Opacity and color changes stay; movement goes. */
+@media (prefers-reduced-motion:reduce){
+  .dot::after{animation:none;opacity:0}
+  .btn:hover:not(:active){transform:none}
+  .btn::after{display:none}
+  .menu,.menu.on{transform:none}
+}
+body.nm .dot::after{animation:none;opacity:0}
+body.nm .btn:hover:not(:active){transform:none}
+body.nm .btn::after{display:none}
+body.nm .menu,body.nm .menu.on{transform:none}

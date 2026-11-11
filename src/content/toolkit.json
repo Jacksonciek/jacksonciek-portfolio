@@ -1,0 +1,7 @@
+{"groups":[
+  {"id":"languages-frameworks","name":"Languages and Frameworks","kind":"engineer","tools":["Python","JavaScript","Laravel","React","Next.js"]},
+  {"id":"ai-data","name":"AI and Data","kind":"engineer","tools":["LangChain","ChromaDB","Weaviate","OpenAI API","MySQL"]},
+  {"id":"infrastructure","name":"Infrastructure","kind":"engineer","tools":["Docker","RabbitMQ"]},
+  {"id":"design","name":"Design","kind":"creative","tools":["Photoshop","Lightroom","Figma","Spline 3D","Blender 3D"]},
+  {"id":"video-motion","name":"Video and Motion","kind":"creative","tools":["Premiere Pro","After Effects"]}
+]}

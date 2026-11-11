@@ -1,0 +1,20 @@
+/* Z-INDEX LAYERS (every stage obeys this block)
+   #hero-video 0 | #gl 1 | main 2 | #zoom 5 | #pg 25 | #menu 28 | #pill 30
+   #quick and #viewer 40 | #splash 50 | .skip 60 (skip link stays reachable during the splash) */
+:root{
+  color-scheme:dark;
+  --bg:#3a4160; --ac:#e6ecfa; --tx:#f5f3f7; --ink:#1d1a2b; --splash:#2c3250;
+  --g-id-bg:#3a4160; --g-id-ac:#e6ecfa; --g-eng-bg:#4b4078; --g-eng-ac:#cdbfff;
+  --g-cre-bg:#7b4b63; --g-cre-ac:#ffc2ad;
+  --glass:rgba(255,255,255,.13); --glass-line:rgba(255,255,255,.24);
+  --f-sans:"Bricolage Grotesque",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --f-serif:"Instrument Serif","Times New Roman",serif;
+  --f-mono:"SF Mono",Menlo,Consolas,"Liberation Mono",monospace;
+  --ease-out:cubic-bezier(.23,1,.32,1); --ease-in-out:cubic-bezier(.77,0,.175,1);
+  --ease-drawer:cubic-bezier(.32,.72,0,1);
+  --d-press:140ms; --d-hover:180ms; --d-ui:240ms; --d-panel:420ms; --d-sig:1050ms;
+  --r-s:10px; --r-m:16px; --r-pill:999px; --pad-x:7vw;
+  /* type scale */
+  --fs-h1:clamp(2.7rem,6.2vw,5.2rem); --fs-h2:clamp(2rem,4.4vw,3.5rem);
+  --fs-body:1.05rem; --fs-label:.75rem; --ls-label:.14em;
+}

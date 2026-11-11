@@ -1,0 +1,8 @@
+[
+  {"id":"t-banner","title":"T-banner","kind":"Print","year":"TODO","cover":"","versions":[{"label":"Final","src":""}],"placeholder":true},
+  {"id":"poster","title":"Poster","kind":"Print","year":"TODO","cover":"","versions":[{"label":"Final","src":""}],"placeholder":true},
+  {"id":"booth","title":"Booth","kind":"Event","year":"TODO","cover":"","versions":[{"label":"Final","src":""}],"placeholder":true},
+  {"id":"brochure","title":"Brochure","kind":"Print","year":"TODO","cover":"","versions":[{"label":"Final","src":""}],"placeholder":true},
+  {"id":"flyer","title":"Flyer","kind":"Print","year":"TODO","cover":"","versions":[{"label":"Final","src":""}],"placeholder":true},
+  {"id":"instagram-ad","title":"Instagram ad","kind":"Social","year":"TODO","cover":"","versions":[{"label":"Final","src":""}],"placeholder":true}
+]
