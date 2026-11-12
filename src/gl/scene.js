@@ -49,7 +49,7 @@ function updateAvatarAttributes() {
 
 function frame(_, dt) {
   if (document.hidden) return; // paused while the tab is hidden
-  if (!document.getElementById('pg')?.hidden || !document.getElementById('quick')?.hidden || !document.getElementById('viewer')?.hidden) return;
+  if (!document.getElementById('pg')?.hidden || !document.getElementById('viewer')?.hidden) return;
   const s = Math.min(dt, 50) / 1000;
   const g = ptr.update(s, motion); // writes the pointer uniforms and returns the gaze
   if (motion) u.uTime.value += s * (1 - 0.7 * u.uHover.value); // frozen time = no drift, no sparkle; hover slows it

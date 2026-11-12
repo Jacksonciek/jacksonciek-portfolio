@@ -1,18 +1,18 @@
-/* Z-INDEX LAYERS (every stage obeys this block)
-   #hero-video 0 | #gl 1 | main 2 | #pg 25 | #menu 28 | #pill 30
-   #quick and #viewer 40 | #splash 50 | .skip 60 (skip link stays reachable during the splash) */
+/* Z-index layers: background 0 | GL 1 | main 2 | pages 25 | menu 28 | nav 30
+   viewer 40 | click glass 49 | splash 50 | skip link 60 */
 :root{
   color-scheme:dark;
-  --bg:#090b0a; --ac:#05f28a; --tx:#f5f7f6; --ink:#090b0a; --splash:#090b0a;
-  --g-id-bg:#090b0a; --g-id-ac:#05f28a; --g-eng-bg:#090b0a; --g-eng-ac:#05f28a;
-  --g-cre-bg:#090b0a; --g-cre-ac:#05f28a;
-  --glass:rgba(255,255,255,.13); --glass-line:rgba(255,255,255,.24);
+  --bg:#0a0c10; --ac:#00ff85; --tx:#e9eceb; --ink:#0a0c10; --splash:#0a0c10;
+  --g-id-bg:#0a0c10; --g-id-ac:#00ff85; --g-eng-bg:#0a0c10; --g-eng-ac:#00ff85;
+  --g-cre-bg:#0a0c10; --g-cre-ac:#00ff85;
+  --glass:rgba(20,27,35,.68); --glass-line:rgba(233,236,235,.24);
+  --glass-highlight:rgba(233,236,235,.2);
   --f-sans:"SF Pro Display","SF Pro Text",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
   --f-serif:"Instrument Serif","Times New Roman",serif;
   --f-mono:"SF Mono",Menlo,Consolas,"Liberation Mono",monospace;
   --ease-out:cubic-bezier(.23,1,.32,1); --ease-in-out:cubic-bezier(.77,0,.175,1);
   --ease-drawer:cubic-bezier(.32,.72,0,1);
-  --d-press:140ms; --d-hover:180ms; --d-ui:240ms; --d-panel:420ms; --d-sig:1050ms;
+  --d-press:120ms; --d-hover:180ms; --d-ui:240ms; --d-panel:420ms; --d-sig:1050ms;
   --r-s:10px; --r-m:16px; --r-pill:999px; --pad-x:7vw;
   /* type scale */
   --fs-h1:clamp(2.7rem,6.2vw,5.2rem); --fs-h2:clamp(2rem,4.4vw,3.5rem);

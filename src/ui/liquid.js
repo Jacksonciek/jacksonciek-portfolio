@@ -1,25 +1,29 @@
-function bloom(target, x, y) {
-  target.style.setProperty('--liquid-x', `${x}px`);
-  target.style.setProperty('--liquid-y', `${y}px`);
-  target.classList.remove('liquid-active');
-  void target.offsetWidth;
-  target.classList.add('liquid-active');
-  target.addEventListener('animationend', () => target.classList.remove('liquid-active'), { once: true });
+let overlay;
+
+function bloom(x, y) {
+  const drop = document.createElement('i');
+  drop.className = 'liquid-drop';
+  drop.setAttribute('aria-hidden', 'true');
+  drop.style.setProperty('--liquid-x', `${x}px`);
+  drop.style.setProperty('--liquid-y', `${y}px`);
+  overlay.append(drop);
+  drop.addEventListener('animationend', () => drop.remove(), { once: true });
 }
 
 export function initLiquid() {
-  document.addEventListener('pointerdown', (event) => {
-    const target = event.target.closest('.btn, .pill-jl, .pill-q, .project-mini-card, .project-scene, .design-board, .text-link, .contact-card, .social-tile');
-    if (!target) return;
-    const rect = target.getBoundingClientRect();
-    bloom(target, event.clientX - rect.left, event.clientY - rect.top);
-  }, { passive: true });
+  overlay = document.createElement('div');
+  overlay.id = 'liquid-effect';
+  overlay.setAttribute('aria-hidden', 'true');
+  document.body.append(overlay);
 
   document.addEventListener('click', (event) => {
-    if (event.detail !== 0) return;
-    const target = event.target.closest('.btn, .pill-jl, .pill-q, .project-mini-card, .project-scene, .design-board, .text-link, .contact-card, .social-tile');
-    if (!target) return;
-    const rect = target.getBoundingClientRect();
-    bloom(target, rect.width / 2, rect.height / 2);
-  });
+    if (event.clientX || event.clientY) {
+      bloom(event.clientX, event.clientY);
+      return;
+    }
+    const rect = event.target instanceof Element
+      ? event.target.getBoundingClientRect()
+      : { left: innerWidth / 2, top: innerHeight / 2, width: 0, height: 0 };
+    bloom(rect.left + rect.width / 2, rect.top + rect.height / 2);
+  }, { passive: true });
 }

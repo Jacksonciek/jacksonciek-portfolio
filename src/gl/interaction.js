@@ -2,7 +2,7 @@
 // uMouse (smoothed, NDC), uForce (pointer speed), uGlow (pointer present), uBurst + uBurstPos (click burst), uHover.
 // update() also returns the gaze (x and y in -.5..+.5) that scene.js turns into a head turn.
 const fine = matchMedia('(hover:hover) and (pointer:fine)');
-const SKIP = 'a,button,input,textarea,select,nav,dialog,[role="dialog"],.shelf,#quick,#pg,#viewer,#splash'; // clicks here never burst
+const SKIP = 'a,button,input,textarea,select,nav,dialog,[role="dialog"],.shelf,#pg,#viewer,#splash'; // clicks here never burst
 const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
 
 export function createInteraction(u) {
