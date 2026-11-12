@@ -2,13 +2,14 @@ import { WebGLRenderer, PerspectiveCamera, Scene, Group, Points, BufferGeometry,
 import { gsap } from 'gsap';
 import { COUNTS } from '../config.js';
 import { motionOn } from '../core/motion.js';
+import { getCurrentChapter } from '../ui/chapters.js';
 import { buildTargets, loadPortraitPool, SIDES } from './shapes.js';
 import { makeMaterial } from './shaders.js';
 import { createInteraction } from './interaction.js';
 
 const phoneMQ = matchMedia('(max-width:760px)'); // same breakpoint as the CSS layout
 const TAN = Math.tan((45 / 2) * (Math.PI / 180)); // half of the 45deg field of view
-const DEN = [1, 0.55, 0.55, 0.55, 0.55, 0.55, 1]; // glyph density per chapter: heavy glyphs on the plain figure
+const DEN = [1, 1, 0.55, 0.55, 0.55, 0.55, 0.55, 0.55, 0.55, 0.55, 0.55]; // dense avatar; lighter helix field
 const lerp = (a, b, t) => a + (b - a) * t;
 let canvas, renderer, camera, scene, group, points, geo, u, ptr;
 let T = [], pair = '', count = 0;
@@ -26,7 +27,6 @@ function layout() {
   camera.position.z = baseZ = camera.aspect < 1 ? 6.4 : 5;
   camera.updateProjectionMatrix();
   u.uPR.value = renderer.getPixelRatio();
-  u.uAspect.value = camera.aspect;
   const halfW = TAN * baseZ * camera.aspect; // half of the visible width at the figure's depth
   offX = Math.min(2.1, halfW * 0.55, halfW * 0.97 - 1.15); // preserve a wider margin around the larger shoulders
   place();
@@ -34,16 +34,14 @@ function layout() {
 
 function place() {
   group.position.set(phone ? 0 : side * offX, phone ? 1.35 : -0.3, 0); // leave a clean text lane under the head on phones
-  group.scale.setScalar(phone ? 0.9 : 1.18);
+  const width = canvas.clientWidth;
+  const scale = phone ? 0.9 : width < 820 ? 0.76 : width < 980 ? 0.86 : width < 1120 ? 1 : 1.18;
+  group.scale.setScalar(scale);
 }
 
 function updateAvatarAttributes() {
   if (!geo) return;
-  const head = new Float32Array(count), bodyCount = Math.round(count * .6);
-  // The image's full head and face occupy roughly its upper half, above the shoulders.
-  // Only the shared body particles turn, so chapter objects remain on their own morph path.
-  for (let i = 0; i < bodyCount; i++) head[i] = T[0][i * 3 + 1] > .05 ? 1 : 0;
-  geo.setAttribute('aHead', new BufferAttribute(head, 1));
+  geo.setAttribute('aHead', new BufferAttribute(T.headMask || new Float32Array(count), 1));
   geo.setAttribute('aGold', new BufferAttribute(T.portraitGold || new Float32Array(count), 1));
 }
 
@@ -51,15 +49,9 @@ function frame(_, dt) {
   if (document.hidden) return; // paused while the tab is hidden
   if (!document.getElementById('pg')?.hidden || !document.getElementById('viewer')?.hidden) return;
   const s = Math.min(dt, 50) / 1000;
-  const g = ptr.update(s, motion); // writes the pointer uniforms and returns the gaze
-  if (motion) u.uTime.value += s * (1 - 0.7 * u.uHover.value); // frozen time = no drift, no sparkle; hover slows it
-  // The figure turns toward the text and leans toward the pointer (gaze). Motion off: no turn.
-  const k = 1 - Math.exp(-3.7 * s);
-  if (motion) {
-    group.rotation.y += (-side * 0.32 + g.x * 0.48 - group.rotation.y) * k;
-    group.rotation.x += (g.y * 0.24 - group.rotation.x) * k;
-    u.uLook.value.set(g.x, g.y);
-  } else { group.rotation.set(0, 0, 0); u.uLook.value.set(0, 0); }
+  const g = ptr.update(s, motion);
+  if (motion) u.uTime.value += s;
+  u.uLook.value.set(g.x, g.y);
   camera.position.z += (baseZ - camera.position.z) * (1 - Math.exp(-4.2 * s));
   renderer.render(scene, camera);
 }
@@ -78,6 +70,7 @@ function apply() {
   gl.setMix(e);
   gl.setDensity(lerp(DEN[i], DEN[j], e));
   gl.setSide(lerp(SIDES[i], SIDES[j], e));
+  u.uHead.value = lerp(i < 2 ? 1 : 0, j < 2 ? 1 : 0, e);
   // Points travel directly between targets; the small spread adds air without a dissolve or camera pullback.
   u.uDis.value = motion ? 0.22 : 0;
 }
@@ -93,7 +86,7 @@ function rebuild() {
 
 export const gl = {
   ready,
-  // Uploads targets A = T[i] and B = T[j] only when the pair changes. T holds one target per chapter (0..6).
+  // Uploads targets A = T[i] and B = T[j] only when the pair changes. T follows the page's chapter order.
   setTargets(i, j) {
     if (!geo || pair === `${i}|${j}`) return;
     pair = `${i}|${j}`;
@@ -103,8 +96,6 @@ export const gl = {
   },
   setMix(e) { if (u) u.uMix.value = e; },
   setDensity(v) { if (u) u.uDen.value = v; },
-  setSpin(v) { if (u) u.uSp.value = v; },
-  setHover(on) { ptr?.setHover(on); }, // eases uHover 0 to 1; also wired to every [data-disperse] element
   setSide(s) { side = s; if (group) place(); }, // -1 left, +1 right; fractions are fine
   setColor(hex) { // 6-digit hex like '#cdbfff'
     const n = parseInt(hex.trim().slice(1), 16);
@@ -133,6 +124,7 @@ export async function initGL(onProgress = () => {}) {
     count = phone ? COUNTS.mobile : COUNTS.desktop; // fixed at start; a resize does not change the count
     await loadPortraitPool();
     T = buildTargets(count, phone ? 0.55 : 1);
+    chap = { ...getCurrentChapter() }; // jl:chapter may have fired before this deferred GL module loaded
     const rnd = new Float32Array(count).map(Math.random);
     geo = new BufferGeometry();
     geo.setAttribute('position', new BufferAttribute(T[0].slice(), 3));
@@ -152,7 +144,7 @@ export async function initGL(onProgress = () => {}) {
     window.addEventListener('resize', () => { layout(); renderer.render(scene, camera); });
     phoneMQ.addEventListener('change', () => { rebuild(); apply(); });
     document.addEventListener('jl:motion', (e) => { motion = e.detail; if (!motion) intro?.progress(1); apply(); });
-    ptr = createInteraction(u);
+    ptr = createInteraction();
     gsap.ticker.add(frame);
     onProgress(1);
     resolveReady(true);

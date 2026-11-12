@@ -4,7 +4,6 @@ import { motionOn } from '../core/motion.js';
 import toolkit from '../content/toolkit.json';
 
 gsap.registerPlugin(ScrollTrigger);
-const TAU = Math.PI * 2;
 const clamp01 = (v) => Math.max(0, Math.min(1, v));
 const smooth = (a, b, x) => { const t = clamp01((x - a) / (b - a)); return t * t * (3 - 2 * t); };
 let ctx, gl;
@@ -99,7 +98,6 @@ function contact(t) {
 }
 
 function resetStatic() {
-  gl.setSpin(0);
   const steps = [...document.querySelectorAll('#experience .step')];
   steps.forEach((step) => { step.style.removeProperty('--step-opacity'); step.removeAttribute('aria-hidden'); });
   const counter = document.querySelector('[data-step-count]'); if (counter) counter.textContent = '02 / 02';
@@ -131,7 +129,6 @@ function build() {
       onUpdate: (self) => { if (motionOn()) onUpdate(self.progress); },
       onRefresh: (self) => { if (motionOn()) onUpdate(self.progress); },
     });
-    add('education', (t) => { gl.setSpin(smooth(.1, .8, t) * TAU); });
     add('experience', experience);
     add('projects', updateProjects);
     add('design', design);

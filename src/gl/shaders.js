@@ -22,13 +22,10 @@ attribute vec3 aB;
 attribute float aR;
 attribute float aHead;
 attribute float aGold;
-uniform float uMix, uIn, uPR, uDen, uDis, uSp, uPx, uPy, uTime;
-uniform vec2 uMouse, uBurstPos; // NDC
+uniform float uMix, uIn, uPR, uDen, uDis, uTime, uHead;
 uniform vec2 uLook;
-uniform float uAspect, uR, uForce, uGlow, uHover, uBurst;
 varying float vG;
 varying float vR;
-varying float vGlow;
 varying float vGold;
 
 // Random unit vector from one random number (the same point always gets the same direction).
@@ -44,22 +41,13 @@ void main() {
   p += dir(aR) * sin(3.14159265 * uMix) * uDis * (1.2 + aR);
   p += vec3(sin(uTime * (.4 + aR * .8) + aR * 40.), cos(uTime * (.5 + aR * .7) + aR * 70.), sin(uTime * (.3 + aR * .9) + aR * 25.)) * .015;
 
-  // Turn only the stable head points. The torso and chapter objects stay on their direct morph path.
-  vec3 hp = p - vec3(0., .84, 0.);
+  // Rotate only head and cap points around the neck. The torso follows the scroll morph directly.
+  vec3 hp = p - vec3(0., .16, 0.);
   float hy = clamp(uLook.x, -1., 1.) * .28;
   float hx = clamp(uLook.y, -1., 1.) * .12;
   float cy = cos(hy), sy = sin(hy), cx = cos(hx), sx = sin(hx);
   vec3 turnedHead = vec3(hp.x * cy + hp.z * sy, hp.y * cx - hp.z * sx, -hp.x * sy + hp.z * cy);
-  p = mix(p, vec3(0., .84, 0.) + turnedHead, aHead);
-
-  // Hovering a call to action: every point drifts outward from the figure's center.
-  p += normalize(p - vec3(uPx, .3, 0.) + dir(aR) * .5) * uHover * (1.5 + aR * 2.);
-
-  // Spin about the vertical axis through the pivot (slowed by hover). A y-axis spin leaves y alone, so uPy is only kept for the pivot contract.
-  float sp = uSp * (1. - .7 * uHover);
-  float c = cos(sp), s = sin(sp);
-  vec3 d = p - vec3(uPx, uPy, 0.);
-  p = vec3(uPx + d.x * c + d.z * s, p.y, d.z * c - d.x * s);
+  p = mix(p, vec3(0., .16, 0.) + turnedHead, aHead * uHead);
 
   // Intro: every point flies in from a scattered spot. uIn arrives already eased from GSAP; the points start staggered by aR.
   vec3 sc = dir(aR + .5) * (2. + 4. * fract(aR * 57.3));
@@ -71,23 +59,7 @@ void main() {
   vGold = aGold;
   vec4 mv = modelViewMatrix * vec4(p, 1.);
   gl_PointSize = 4.6 * uPR * (.72 + aR * .55) * (6. / -mv.z);
-  vec4 clip = projectionMatrix * mv;
-
-  // Pointer, in screen space (NDC with x scaled by the aspect, so distances are round): points near it swell and get pushed away.
-  vec2 ndc = clip.xy / clip.w;
-  vec2 dm = (ndc - uMouse) * vec2(uAspect, 1.);
-  float d2 = dot(dm, dm);
-  float push = exp(-d2 / (uR * uR)) * uForce;
-  vGlow = exp(-d2 / (uR * uR * 1.6)) * uGlow;
-  gl_PointSize *= 1. + vGlow * .9;
-  ndc += dm / max(length(dm), .0001) * vec2(1. / uAspect, 1.) * push * .18 * (.5 + aR);
-
-  // Click burst: points within about .6 of the click jump outward, then spring back as uBurst decays.
-  vec2 db = (ndc - uBurstPos) * vec2(uAspect, 1.);
-  float bl = length(db);
-  ndc += db / max(bl, .0001) * vec2(1. / uAspect, 1.) * (1. - smoothstep(0., .6, bl)) * uBurst * (.9 + aR * 1.4) * .3;
-
-  gl_Position = vec4(ndc * clip.w, clip.zw);
+  gl_Position = projectionMatrix * mv;
 }`;
 
 const frag = /* glsl */ `
@@ -96,17 +68,15 @@ uniform vec3 uC, uAccent;
 uniform float uTime;
 varying float vG;
 varying float vR;
-varying float vGlow;
 varying float vGold;
 
 void main() {
   float a = texture2D(uA, vec2((vG + gl_PointCoord.x) / 8., 1. - gl_PointCoord.y)).a; // 1. - y: canvas textures are flipped
   if (a < .12) discard;
   if (vR > .97) a *= .6 + .4 * sin(uTime * 4. + vR * 60.); // a few sparkles
-  a *= .85 + vGlow * .5;
   float fleck = max(smoothstep(.94, 1., vR) * (.66 + .34 * sin(uTime * 2. + vR * 90.)), vGold * .9);
   vec3 bodyTone = mix(uC, vec3(.68, .94, .8), .36);
-  gl_FragColor = vec4(mix(mix(bodyTone, uAccent, fleck), vec3(1.), vGlow * .6), a * (.88 + fleck * .2));
+  gl_FragColor = vec4(mix(bodyTone, uAccent, fleck), a * (.88 + fleck * .2));
 }`;
 
 // uC holds raw sRGB numbers on purpose: the shader writes them straight to the canvas, so the hex looks exactly like the CSS color.
@@ -120,10 +90,8 @@ export function makeMaterial() {
     uniforms: {
       uMix: { value: 0 }, uIn: { value: 0 }, uPR: { value: 1 }, uC: { value: new Vector3(1, 1, 1) },
       uAccent: { value: new Vector3(0.92, 0.75, 0.28) },
-      uDen: { value: 1 }, uDis: { value: 1 }, uSp: { value: 0 }, uPx: { value: 0 }, uPy: { value: 0 },
+      uDen: { value: 1 }, uDis: { value: 1 }, uHead: { value: 1 },
       uTime: { value: 0 }, uA: { value: makeAtlas() }, uLook: { value: new Vector2() },
-      uMouse: { value: new Vector2() }, uBurstPos: { value: new Vector2() }, uAspect: { value: 1 }, uR: { value: 0.28 },
-      uForce: { value: 0 }, uGlow: { value: 0 }, uHover: { value: 0 }, uBurst: { value: 0 },
     },
   });
 }

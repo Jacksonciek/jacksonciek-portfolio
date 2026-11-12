@@ -44,8 +44,8 @@ body::before{opacity:.11;background:radial-gradient(ellipse at 72% 48%,rgba(0,25
 .ch:not(#home) .txt>p:not(.tag,.hint,.step-count,.mini-ui){color:rgba(245,247,246,.76)}
 .ch h2{font-size:clamp(2.75rem,5.8vw,6.2rem);line-height:.94;letter-spacing:-.075em;text-wrap:balance}
 .tag{font:600 .68rem/1.2 var(--f-mono);letter-spacing:.14em;text-transform:uppercase}
-.education-chapter .stage{justify-content:center}
-.education-chapter .txt{width:min(650px,46vw);max-width:none;margin-left:auto}
+.education-chapter .stage{grid-template-columns:minmax(0,1fr);justify-content:start}
+.education-chapter .txt{grid-column:1;width:min(650px,42vw);max-width:none;margin-right:0;margin-left:5vw}
 .education-chapter h2{max-width:11ch}
 .education-degree{padding:0;border:0;background:none}
 .degree-seal{background:rgba(0,255,133,.12);color:var(--ac)}
@@ -192,7 +192,7 @@ body::before{opacity:.11;background:radial-gradient(ellipse at 72% 48%,rgba(0,25
   .ch h2{font-size:clamp(2.5rem,10vw,4.3rem)}
   #home .stage{padding-top:27vh}
   .education-chapter .stage{align-items:center}
-  .education-chapter .txt{width:100%;max-height:78vh;overflow:auto;padding:0!important}
+  .education-chapter .txt{width:100%;max-height:78vh;overflow:auto;margin:0;padding:0!important}
   .experience-chapter{height:300vh}
   .experience-chapter .stage{display:block;padding-top:14vh}
   #experience.ch .txt{position:relative;z-index:2;max-width:none;max-height:none;overflow:visible;padding-right:.3rem!important;gap:.62rem}

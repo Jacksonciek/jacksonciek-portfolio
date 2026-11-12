@@ -17,15 +17,22 @@ export async function loadPortraitPool(src = '/media/3d-avatar.png') {
     const ctx = canvas.getContext('2d', { willReadFrequently: true });
     ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
     const { data } = ctx.getImageData(0, 0, canvas.width, canvas.height);
-    const pixels = [];
+    const pixels = [], headPixels = [], bodyPixels = [];
     for (let y = 0; y < canvas.height; y++) for (let x = 0; x < canvas.width; x++) {
       const i = (y * canvas.width + x) * 4;
       const r = data[i], g = data[i + 1], b = data[i + 2];
       const luma = r * .2126 + g * .7152 + b * .0722;
       const gold = r > 105 && g > 90 && b < 125 && r > g * 1.08;
-      if (luma < 150 || gold) pixels.push(x, y, luma, gold ? 1 : 0);
+      if (luma < 150 || gold) {
+        const point = [x, y, luma, gold ? 1 : 0];
+        pixels.push(...point);
+        if (y / canvas.height < 0.51) headPixels.push(...point);
+        if (y / canvas.height > 0.43) bodyPixels.push(...point);
+      }
     }
-    if (pixels.length > 1200) portraitPool = { pixels, width: canvas.width, height: canvas.height };
+    if (pixels.length > 1200) portraitPool = {
+      pixels, headPixels, bodyPixels, width: canvas.width, height: canvas.height,
+    };
   } catch (error) {
     console.warn('Portrait particles unavailable; using the procedural figure.', error);
   }
@@ -125,55 +132,19 @@ export const BODY = [
   [0.035, sph(0.43, 0.78, -0.38, 0, 0.6, 1.15, 0.58)], // right upper arm
 ];
 
-// ---- Stage 3b: chapter objects and the seven targets ----
-// Chapter order: home, education, experience, projects, design, video, contact.
-// Side per chapter: +1 = figure on the right (text on the left), -1 = figure on the left.
-export const SIDES = [1, -1, 1, -1, 1, -1, 1];
+// Home and Education share a fixed head group, so the neck pivot can turn the head without moving the torso.
+export const HEAD_RATIO = 0.38;
+export const SIDES = [1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0];
 
-// One recipe per chapter object, as a [weight, sampler] list. Every x is multiplied by m (the chapter's side,
-// scaled down on phones), so the object always sits on the screen-center side of the figure.
-const edu = (m) => [
-  [3, box(1.55, 0.075, 1.55, 0, 1.84, 0)], // mortarboard
-  [2, sph(0.42, 0, 1.62, 0, 1, 0.58, 1)], // cap crown
-  [2, cone(0.9, 1.52, 0, -0.32, 0)], // graduation gown
-  [1, cyl(0.018, 0.58, 0.66 * m, 1.42, 0)], // tassel
-  [2, cyl(0.1, 0.44, -1 * m, -0.48, 0.62)], // diploma
-  [1, box(0.27, 0.12, 0.2, -1 * m, -0.44, 0.62)], // diploma ribbon
-];
-const exp = (m) => [
-  [3, box(1.3, 0.06, 0.9, -1.3 * m, -0.6, 0.5)], // laptop base
-  [3, box(1.3, 0.85, 0.05, -1.3 * m, -0.15, 0.1)], // laptop screen
-  [2, cyl(0.3, 0.45, -1.5 * m, 0.9, 0)], // database, lower disc
-  [2, cyl(0.3, 0.45, -1.5 * m, 1.4, 0)], // database, upper disc
-  [2, box(0.7, 0.45, 0.05, -0.9 * m, 1.7, 0)], // envelope
-];
-const prj = (m) => [
-  [4, rect(1.7, 1.15, -1.4 * m, 0.7, 0.5, true)], // browser window outline
-  [1, rect(1.7, 1.15, -1.4 * m, 0.7, 0.5)], // window fill
-  [1, rect(1.7, 0.18, -1.4 * m, 1.18, 0.5)], // title bar
-];
-const dsn = (m) => [
-  [2, cyl(0.06, 1.5, -1.5 * m, 0.4, 0.5)], // stylus
-  [1, cone(0.07, 0.25, -1.5 * m, -0.45, 0.5)], // stylus tip
-  [3, rect(1, 1.4, -1.1 * m, 1, 0.3, true)], // canvas outline
-  [1, rect(1, 1.4, -1.1 * m, 1, 0.3)], // canvas fill
-];
-const vid = (m) => [
-  [4, box(1.1, 0.7, 0.6, -1.3 * m, 0.3, 0.4)], // camera body
-  [2, sph(0.28, -1.3 * m, 0.3, 0.8, 1, 1, 0.7)], // lens
-  [2, box(0.3, 1.3, 0.03, -2 * m, -0.2, 0.2)], // film strip
-];
-const OBJECTS = [null, edu, exp, prj, dsn, vid, null]; // home and contact: the plain figure
-
-// One Float32Array (n points) per chapter. The first 60% of the points are the SAME body samples in every chapter,
-// so the figure holds still and only the object morphs. The last 40% are the chapter's object (Home and Contact
-// use more body there). compress < 1 pulls the objects toward the figure (phones: centered figure, narrow screen).
-function samplePortrait(n, pool, compress = 1, gold = new Float32Array(n)) {
+// The sample image is split at the neck before sampling. This preserves its profile while keeping head points
+// contiguous for the GPU mask. compress < 1 keeps the scene inside narrow phone viewports.
+function samplePortrait(n, pool, segment = 'pixels', compress = 1, gold = new Float32Array(n)) {
   const out = new Float32Array(n * 3);
+  const source = pool[segment]?.length > 1200 ? pool[segment] : pool.pixels;
   const step = 4;
   for (let i = 0; i < n; i++) {
-    const k = Math.floor(rand() * (pool.pixels.length / step)) * step;
-    const x = pool.pixels[k], y = pool.pixels[k + 1], luma = pool.pixels[k + 2];
+    const k = Math.floor(rand() * (source.length / step)) * step;
+    const x = source[k], y = source[k + 1], luma = source[k + 2];
     // Give the portrait a softly rounded volume so it still reads when the head turns.
     // The uploaded image remains the silhouette map; depth is inferred from its horizontal profile.
     const across = ((x / pool.width) - .5) * 2;
@@ -182,24 +153,78 @@ function samplePortrait(n, pool, compress = 1, gold = new Float32Array(n)) {
     out[i * 3] = ((x / pool.width) - .5) * 2.35 * compress;
     out[i * 3 + 1] = (.5 - y / pool.height) * 2.52 * compress;
     out[i * 3 + 2] = z;
-    gold[i] = pool.pixels[k + 3];
+    gold[i] = source[k + 3];
+  }
+  return out;
+}
+
+function sampleGraduation(n, base, compress = 1) {
+  const out = base.slice();
+  const headEnd = Math.round(n * HEAD_RATIO);
+  const capEnd = Math.round(n * 0.21);
+  const cap = pick([
+    [7, box(1.62, 0.07, 1.16, 0, 1.56, 0)],
+    [2, box(0.64, 0.24, 0.64, 0, 1.42, 0)],
+    [1, cyl(0.014, 0.5, 0.68, 1.27, 0)],
+  ]);
+  const gown = pick([
+    [7, cone(0.86, 1.82, 0, -0.68, 0)],
+    [2, sph(0.72, 0, -0.1, 0, 1.18, 0.43, 0.68)],
+    [1, box(1.5, 0.1, 0.48, 0, -1.43, 0)],
+  ]);
+  const stole = rect(0.2, 1.42, 0.15, -0.48, 0.47);
+  const diploma = pick([
+    [3, cyl(0.1, 0.43, 0.78, -0.1, 0.52)],
+    [1, box(0.24, 0.12, 0.16, 0.78, -0.1, 0.52)],
+  ]);
+  for (let i = 0; i < n; i++) {
+    const o = i * 3;
+    if (i < capEnd) cap(out, o);
+    else if (i >= headEnd) {
+      const r = (i - headEnd) / Math.max(1, n - headEnd);
+      (r < 0.78 ? gown : r < 0.9 ? stole : diploma)(out, o);
+    }
+    if (i < capEnd || i >= headEnd) {
+      out[o] *= compress;
+      out[o + 1] *= compress;
+      out[o + 2] *= compress;
+    }
+  }
+  return out;
+}
+
+function sampleHelix(n, compress = 1, phase = 0) {
+  const out = new Float32Array(n * 3);
+  for (let i = 0; i < n; i++) {
+    const strand = i & 1;
+    const t = i / Math.max(1, n - 1);
+    const a = t * Math.PI * 12 + phase + strand * Math.PI;
+    const radius = 0.45 + 0.14 * Math.sin(t * Math.PI * 2);
+    out[i * 3] = (Math.cos(a) * radius + (rand() - 0.5) * 0.16) * compress;
+    out[i * 3 + 1] = ((t - 0.5) * 3.1 + (rand() - 0.5) * 0.16) * compress;
+    out[i * 3 + 2] = (Math.sin(a) * radius + (rand() - 0.5) * 0.16) * compress;
   }
   return out;
 }
 
 export function buildTargets(n, compress = 1, pool = portraitPool) {
   const tone = new Float32Array(n);
-  const body = pool ? samplePortrait(n, pool, compress, tone) : sample(n, pick(BODY));
-  const nb = Math.round(n * 0.6);
-  tone.fill(0, nb);
-  const targets = OBJECTS.map((make, c) => {
-    const t = body.slice();
-    if (make) {
-      const obj = pick(make(SIDES[c] * compress));
-      for (let k = nb; k < n; k++) obj(t, k * 3);
-    }
-    return t;
-  });
+  const headCount = Math.round(n * HEAD_RATIO);
+  const body = new Float32Array(n * 3);
+  if (pool) {
+    samplePortrait(headCount, pool, 'headPixels', compress, tone.subarray(0, headCount)).forEach((v, i) => { body[i] = v; });
+    samplePortrait(n - headCount, pool, 'bodyPixels', compress, tone.subarray(headCount)).forEach((v, i) => { body[(i + headCount * 3)] = v; });
+  } else {
+    const head = sample(headCount, pick([[1, sph(0.54, 0, 0.78, 0, 0.82, 1.14, 0.72)]]));
+    const torso = sample(n - headCount, pick(BODY.slice(3)));
+    body.set(head);
+    body.set(torso, headCount * 3);
+  }
+  const education = sampleGraduation(n, body, compress);
+  const field = Array.from({ length: 9 }, (_, i) => sampleHelix(n, compress, i * 0.045));
+  const targets = [body, education, ...field];
+  targets.headMask = new Float32Array(n);
+  targets.headMask.fill(1, 0, headCount);
   targets.portraitGold = tone;
   return targets;
 }
