@@ -36,7 +36,7 @@ function prepareDecorativeContent() {
     for (let i = 0; i < 12; i++) {
       const frame = document.createElement('div');
       frame.className = `film-frame film-frame-${i % 6}`;
-      frame.innerHTML = `<span class="film-number">${String(i + 1).padStart(2, '0')}</span><i aria-hidden="true"></i><span class="film-caption">Frame ${String(i + 1).padStart(2, '0')}</span>`;
+      frame.innerHTML = `<span class="film-number">${String(i + 1).padStart(2, '0')}</span><i aria-hidden="true"></i><span class="film-caption">Footage not supplied</span>`;
       track.append(frame);
     }
   }
@@ -138,12 +138,25 @@ function agents(t) {
   revealElements([...section.querySelector('.agent-heading').children, section.querySelector('.agent-console')], t, .01, .2);
 }
 
-function design(t) {
-  const macbook = document.querySelector('[data-macbook]');
+function transitionCopy(t) {
+  const heading = document.querySelector('#transition-copy h2');
+  if (heading) revealElements([heading], t, .04, .2);
+}
+
+function macbookTransition(t) {
+  const macbook = document.querySelector('#macbook-transition [data-macbook]');
   if (!macbook) return;
-  const opened = smooth(.015, .2, t);
+  const opened = smooth(.015, .24, t);
+  const push = smooth(.48, .98, t);
+  const endScale = Number.parseFloat(getComputedStyle(macbook).getPropertyValue('--screen-end-scale')) || 1.2;
   macbook.style.setProperty('--lid-open', String(opened));
-  macbook.style.setProperty('--screen-arrive', String(smooth(.13, .34, t)));
+  macbook.style.setProperty('--screen-push', String(push));
+  macbook.style.setProperty('--screen-scale', String(1 + (endScale - 1) * push));
+  macbook.style.setProperty('--screen-opacity', String(1 - push * .86));
+  macbook.style.setProperty('--base-opacity', String(1 - push));
+  macbook.style.setProperty('--base-lift', `${push * 34}px`);
+  macbook.style.setProperty('--caption-opacity', String(1 - push));
+  gl?.setCameraPush(push);
 }
 
 function video(t) {
@@ -178,9 +191,17 @@ function resetStatic() {
   if (counter) { counter.dataset.current = '0'; counter.textContent = `01 / ${String(document.querySelectorAll('[data-experience-card]').length).padStart(2, '0')}`; }
   const progress = document.querySelector('[data-role-progress]');
   if (progress) progress.style.removeProperty('transform');
-  const macbook = document.querySelector('[data-macbook]');
+  const macbook = document.querySelector('#macbook-transition [data-macbook]');
   if (macbook) macbook.style.setProperty('--lid-open', motionOn() ? '0' : '1');
-  if (macbook) macbook.style.setProperty('--screen-arrive', motionOn() ? '0' : '1');
+  if (macbook) macbook.style.setProperty('--screen-push', '0');
+  if (macbook) {
+    macbook.style.setProperty('--screen-scale', '1');
+    macbook.style.setProperty('--screen-opacity', '1');
+    macbook.style.setProperty('--base-opacity', '1');
+    macbook.style.setProperty('--base-lift', '0px');
+    macbook.style.setProperty('--caption-opacity', '1');
+  }
+  gl?.setCameraPush(0);
   const rail = document.querySelector('[data-project-rail]');
   if (rail) {
     rail.style.transform = '';
@@ -213,7 +234,8 @@ function build() {
     add('experience', experience);
     add('projects', updateProjects);
     add('agents', agents);
-    add('design', design);
+    add('transition-copy', transitionCopy);
+    add('macbook-transition', macbookTransition);
     add('video', video);
     add('contact', contact);
     const officeReveal = gsap.utils.toArray('.office-intro > *, .office-scene, .foot-connect-copy > *, .social-tile');

@@ -29,6 +29,10 @@ function face(work, kind, index) {
     const title = document.createElement('strong'); title.className = 'shelf-cover-title'; title.textContent = work.title;
     const kindLabel = document.createElement('span'); kindLabel.className = 'shelf-cover-kind'; kindLabel.textContent = work.kind || 'Selected work';
     el.append(number, title, kindLabel);
+    if (work.placeholder || !(work.cover || work.versions?.some((version) => version.src))) {
+      const status = document.createElement('span'); status.className = 'shelf-cover-status'; status.textContent = 'Preview not supplied';
+      el.append(status);
+    }
   }
   return el;
 }
@@ -49,7 +53,7 @@ export function createShelf(root, works, opts = {}) {
     tape.className = 'shelf-tape';
     tape.type = 'button'; tape.dataset.index = String(i); tape.dataset.virtual = String(c * N + i);
     tape.style.setProperty('--work-hue', `${(i * 53 + 27) % 360}`);
-    tape.dataset.workIndex = String(i); tape.setAttribute('aria-label', `View ${work.title}`);
+    tape.dataset.workIndex = String(i); tape.setAttribute('aria-label', `View ${work.title}${work.placeholder || !(work.cover || work.versions?.some((version) => version.src)) ? '; artwork preview not supplied' : ''}`);
     tape.setAttribute('aria-hidden', original ? 'false' : 'true'); tape.tabIndex = original ? 0 : -1;
     tape.append(face(work, 'spine', i), face(work, 'cover', i));
     const item = { el: tape, i, virtual: c * N + i, lift: 0, liftTo: 0, original };

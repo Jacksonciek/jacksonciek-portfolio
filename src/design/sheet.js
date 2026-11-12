@@ -3,7 +3,10 @@ import { motionOn, RM } from '../core/motion.js';
 import { trapFocus } from '../core/a11y.js';
 
 const EASE = 'cubic-bezier(.77,0,.175,1)';
-const cleanVersions = (work) => (work.versions || []).filter((v) => v?.label).length ? work.versions.filter((v) => v?.label) : [{ label: 'Final', src: work.cover || '' }];
+const cleanVersions = (work) => {
+  const versions = (work.versions || []).filter((v) => v?.label && v.src);
+  return versions.length ? versions : [{ label: 'Preview not supplied', src: '' }];
+};
 
 function art(work, version) {
   const frame = document.createElement('div'); frame.className = 'viewer-art';
@@ -12,10 +15,11 @@ function art(work, version) {
   const src = version?.src || work.cover;
   if (src) { const img = document.createElement('img'); img.src = src; img.alt = `${work.title} — ${version?.label || 'Final'} version`; img.loading = 'eager'; img.decoding = 'async'; img.width = 474; img.height = 900; frame.append(img); }
   else {
-    const number = document.createElement('span'); number.className = 'viewer-art-index'; number.textContent = String((String(work.id).length * 7) % 99 + 1).padStart(2, '0');
+    frame.classList.add('viewer-art--missing');
+    const status = document.createElement('span'); status.className = 'viewer-art-status'; status.textContent = 'Artwork not supplied';
     const title = document.createElement('strong'); title.textContent = work.title;
     const meta = document.createElement('span'); meta.textContent = version?.label || 'Selected work';
-    frame.append(number, title, meta);
+    frame.append(status, title, meta);
   }
   return frame;
 }
@@ -33,10 +37,11 @@ export function createWorkSheet(root = document.getElementById('viewer')) {
     const label = document.createElement('p'); label.className = 'meta viewer-kind'; label.textContent = work.kind || 'Selected work';
     const title = document.createElement('h2'); title.id = 'viewer-title'; title.textContent = work.title;
     const meta = document.createElement('p'); meta.className = 'viewer-meta'; meta.textContent = [work.year && work.year !== 'TODO' ? work.year : '', work.kind || ''].filter(Boolean).join(' / ');
+    const list = cleanVersions(work), hasArtwork = list.some((version) => version.src);
     const description = document.createElement('p'); description.className = 'viewer-description';
-    description.textContent = work.description || 'A campaign visual from Jackson’s design practice. Add the artwork files to show every version here.';
-    const versionLabel = document.createElement('p'); versionLabel.className = 'meta viewer-version-label'; versionLabel.textContent = 'Versions';
-    const versions = document.createElement('div'); versions.className = 'viewer-versions'; versions.setAttribute('role', 'group'); versions.setAttribute('aria-label', 'Artwork versions');
+    description.textContent = work.description || 'Artwork preview not supplied.';
+    const versionLabel = document.createElement('p'); versionLabel.className = 'meta viewer-version-label'; versionLabel.textContent = hasArtwork ? 'Versions' : 'Artwork status';
+    const versions = document.createElement('div'); versions.className = 'viewer-versions'; versions.setAttribute('role', 'group'); versions.setAttribute('aria-label', hasArtwork ? 'Artwork versions' : 'Artwork preview status');
     const artwork = document.createElement('div'); artwork.className = 'viewer-artwork';
     const other = document.createElement('div'); other.className = 'viewer-other';
     const otherLabel = document.createElement('span'); otherLabel.className = 'meta'; otherLabel.textContent = 'Other works'; other.append(otherLabel);
@@ -44,11 +49,14 @@ export function createWorkSheet(root = document.getElementById('viewer')) {
     copy.append(label, title, meta, description, versionLabel, versions);
     layout.append(copy, artwork); root.append(close, layout, other);
 
-    const list = cleanVersions(work);
     const showVersion = (n, animate = false) => {
       current.version = n;
       versions.replaceChildren();
       list.forEach((v, i) => {
+        if (!hasArtwork) {
+          const status = document.createElement('span'); status.className = 'meta viewer-preview-status'; status.textContent = v.label; versions.append(status);
+          return;
+        }
         const button = document.createElement('button'); button.type = 'button'; button.className = 'chip viewer-chip';
         button.textContent = v.label; button.setAttribute('aria-pressed', String(i === n));
         button.addEventListener('click', () => showVersion(i, true)); versions.append(button);

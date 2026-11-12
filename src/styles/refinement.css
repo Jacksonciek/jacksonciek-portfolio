@@ -291,6 +291,66 @@ body.nm .agent-connector>i{animation:none;transform:scaleX(1)}
 body.nm .office-agent{animation:none!important}
 body.nm .project-scene,body.nm .social-tile,body.nm .film-frame{transition:none!important}
 
+/* The two-part design handoff stays on this page and scrubs in both directions. */
+#transition-copy{height:190vh}
+.transition-copy-stage{display:grid;place-items:center;text-align:center}
+.transition-copy-stage h2{max-width:14ch;margin:0;text-align:center;font-size:clamp(3.4rem,9vw,9rem);line-height:.88;will-change:transform,opacity}
+.transition-copy-stage h2 em{color:var(--ac);font-family:var(--f-serif);font-weight:400;letter-spacing:-.06em}
+#macbook-transition{height:280vh}
+.macbook-transition-stage{display:flex;align-items:center;justify-content:center;overflow:visible}
+.transition-macbook{--screen-end-scale:1.2;position:relative;z-index:2;width:min(90vw,1180px);perspective:1700px;perspective-origin:50% 60%;padding-top:2vh}
+.transition-macbook .macbook-lid{transform:rotateX(calc(88deg * (1 - var(--lid-open,0))))}
+.transition-macbook .macbook-screen{transform:translateZ(4px) scale(var(--screen-scale,1));transform-origin:center;opacity:var(--screen-opacity,1);will-change:transform,opacity}
+.transition-macbook .macbook-base{opacity:var(--base-opacity,1);transform:translateY(var(--base-lift,0)) rotateX(60deg);transition:none}
+.transition-macbook .macbook-caption{opacity:var(--caption-opacity,1)}
+.transition-display{background:radial-gradient(circle at 76% 25%,rgba(0,255,133,.1),transparent 37%),#0c100e}
+.transition-display .design-board{background:linear-gradient(145deg,rgba(255,255,255,.045),rgba(255,255,255,.008)),#151916}
+.transition-display .design-board::before{clip-path:none;border-style:dashed;border-color:rgba(245,247,246,.26);border-radius:2px}
+.transition-display .design-board-orbit{display:none}
+.transition-display .design-board>b{font-family:var(--f-sans);font-weight:600;line-height:.95;letter-spacing:-.06em}
+.transition-display .design-board>b em{color:var(--ac)}
+.transition-display .design-board-notes b{max-width:9ch}
+#design .stage{display:block;padding-top:clamp(6.5rem,11vh,9rem);padding-bottom:5vh}
+.design-copy{width:min(100%,1060px);max-width:none;margin-inline:auto}
+.design-copy h2{max-width:12ch;font-size:clamp(2.8rem,5.4vw,5.6rem)}
+.design-copy>p:not(.tag,.hint){max-width:68ch}
+.asset-note{max-width:66ch;color:rgba(245,247,246,.66);font-size:.76rem;line-height:1.4}
+.shelf-mount{width:min(100%,1060px);height:clamp(150px,21vh,220px);margin:0 auto}
+.shelf-cover-status{position:absolute;z-index:2;top:.7rem;left:.7rem;padding:.35rem .42rem;border:1px solid rgba(255,255,255,.32);background:rgba(10,12,16,.74);color:#fff;font:600 .42rem/1.1 var(--f-mono);letter-spacing:.07em;text-transform:uppercase}
+.viewer-art--missing{align-content:center;justify-items:start;gap:.9rem;background:linear-gradient(145deg,#202722,#111512 72%)}
+.viewer-art--missing::before{border-style:dashed;border-radius:0;box-shadow:none}
+.viewer-art-status{position:relative;z-index:1;color:var(--ac);font:600 .65rem/1.2 var(--f-mono);letter-spacing:.11em;text-transform:uppercase}
+.viewer-chip:disabled{cursor:default;opacity:.75}
+.work-grid-status{position:absolute;left:12px;right:12px;top:50%;padding:.6rem .45rem;border:1px dashed rgba(255,255,255,.55);background:rgba(10,12,16,.78);color:#fff;text-align:center;font:600 .58rem/1.1 var(--f-mono);letter-spacing:.08em;text-transform:uppercase;transform:translateY(-50%)}
+.film{position:relative}
+.film-status{position:absolute;z-index:3;right:14px;bottom:12px;padding:.45rem .6rem;border:1px solid rgba(255,255,255,.35);background:rgba(10,12,16,.8);color:var(--tx);font:600 .56rem/1 var(--f-mono);letter-spacing:.1em}
+.film-caption{text-transform:uppercase}
+@media(max-width:1100px){.transition-macbook{--screen-end-scale:1.38}}
+@media(max-width:900px){.transition-macbook{--screen-end-scale:2.35}}
+@media(max-width:760px){
+  #transition-copy{height:170svh}#macbook-transition{height:250svh}
+  .transition-copy-stage{align-items:center;padding:0 var(--pad-x)}
+  .transition-copy-stage h2{font-size:clamp(3rem,10vw,5rem)}
+  .macbook-transition-stage{align-items:center;padding:0 var(--pad-x)}
+  .transition-macbook{--screen-end-scale:3.8;width:100%;padding-top:0;transform:none}
+  .transition-macbook .macbook-caption{font-size:.43rem}
+  #design .stage{display:block;padding-top:clamp(6rem,12vh,8rem);padding-bottom:2rem}
+  .design-copy{max-height:none;overflow:visible}
+  .design-copy h2{font-size:clamp(2.3rem,8vw,3.4rem)}
+  .design-copy>p:not(.tag,.hint){font-size:.78rem;line-height:1.35}
+  .shelf-mount{height:clamp(110px,16vh,150px);overflow:hidden;contain:paint}
+}
+@media(max-width:420px){.transition-macbook{--screen-end-scale:3.9}.film-status{right:8px;bottom:8px;font-size:.48rem}}
+@media(prefers-reduced-motion:reduce){#transition-copy,#macbook-transition{height:100svh}}
+body.nm #transition-copy,body.nm #macbook-transition{height:100svh}
+body.nm .transition-copy-stage h2{opacity:1!important;transform:none!important}
+@media(prefers-reduced-transparency:reduce){
+  .pill,.glass,.badge,.btn--secondary,.menu,#pg,#viewer,.shelf-caption,.office-agent{backdrop-filter:none!important;-webkit-backdrop-filter:none!important}
+  .pill,.glass,.badge,.btn--secondary,.shelf-caption{background-color:rgba(13,16,19,.96)}
+  .menu{background:rgba(10,12,16,.98)}
+  #pg,#viewer{background-color:#0a0c10}
+}
+
 /* Motion-off view keeps every project reachable in a native horizontal scroller. */
 @media(prefers-reduced-motion:reduce){
   .project-chapter,body.nm .project-chapter{height:auto;min-height:100svh;overflow:visible}

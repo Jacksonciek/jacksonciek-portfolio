@@ -13,7 +13,7 @@ const DEN = [1, 1, 0.55, 0.55, 0.55, 0.55, 0.55, 0.55, 0.55, 0.55, 0.55]; // den
 const lerp = (a, b, t) => a + (b - a) * t;
 let canvas, renderer, camera, scene, group, points, geo, u, ptr;
 let T = [], pair = '', count = 0;
-let side = 1, phone = false, motion = true, baseZ = 5, offX = 1.9, intro = null;
+let side = 1, phone = false, motion = true, baseZ = 5, cameraPush = 0, offX = 1.9, intro = null;
 let chap = { i: 0, j: 0, e: 0 }; // last jl:chapter, kept so the scene can start from any scroll position
 let resolveReady;
 const ready = new Promise((r) => { resolveReady = r; }); // resolves true, or false when WebGL is unavailable
@@ -24,7 +24,8 @@ function layout() {
   renderer.setPixelRatio(Math.min(devicePixelRatio, phone ? 1.5 : 2));
   renderer.setSize(canvas.clientWidth, canvas.clientHeight, false); // CSS owns the canvas size
   camera.aspect = canvas.clientWidth / canvas.clientHeight;
-  camera.position.z = baseZ = camera.aspect < 1 ? 6.4 : 5;
+  baseZ = camera.aspect < 1 ? 6.4 : 5;
+  camera.position.z = baseZ * (1 - cameraPush * 0.34);
   camera.updateProjectionMatrix();
   u.uPR.value = renderer.getPixelRatio();
   const halfW = TAN * baseZ * camera.aspect; // half of the visible width at the figure's depth
@@ -52,7 +53,6 @@ function frame(_, dt) {
   const g = ptr.update(s, motion);
   if (motion) u.uTime.value += s;
   u.uLook.value.set(g.x, g.y);
-  camera.position.z += (baseZ - camera.position.z) * (1 - Math.exp(-4.2 * s));
   renderer.render(scene, camera);
 }
 
@@ -97,6 +97,10 @@ export const gl = {
   setMix(e) { if (u) u.uMix.value = e; },
   setDensity(v) { if (u) u.uDen.value = v; },
   setSide(s) { side = s; if (group) place(); }, // -1 left, +1 right; fractions are fine
+  setCameraPush(progress) {
+    cameraPush = Math.max(0, Math.min(1, progress));
+    if (camera) camera.position.z = baseZ * (1 - cameraPush * 0.34);
+  },
   setColor(hex) { // 6-digit hex like '#cdbfff'
     const n = parseInt(hex.trim().slice(1), 16);
     if (u) u.uC.value.set(((n >> 16) & 255) / 255, ((n >> 8) & 255) / 255, (n & 255) / 255);
