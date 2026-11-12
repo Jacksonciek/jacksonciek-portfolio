@@ -6,10 +6,10 @@
   --glass:rgba(20,27,35,.68);--glass-line:rgba(233,236,235,.24);--glass-highlight:rgba(233,236,235,.2);
   --line-soft:rgba(233,236,235,.15);
 }
-.glass,.btn--secondary,.badge,.pill,.agent-node{isolation:isolate}
+.glass,.btn--secondary,.badge,.pill{isolation:isolate}
 .glass,.badge{position:relative}
-.glass::before,.btn--secondary::before,.badge::before,.pill::before,.agent-node::before{content:"";position:absolute;inset:0;z-index:-1;border-radius:inherit;pointer-events:none;background:radial-gradient(ellipse at 24% 0%,rgba(233,236,235,.15),transparent 55%);opacity:.44}
-@supports (filter:url(#liquid-displacement)){.glass::before,.btn--secondary::before,.badge::before,.pill::before,.agent-node::before{filter:url(#liquid-displacement)}}
+.glass::before,.btn--secondary::before,.badge::before,.pill::before{content:"";position:absolute;inset:0;z-index:-1;border-radius:inherit;pointer-events:none;background:radial-gradient(ellipse at 24% 0%,rgba(233,236,235,.15),transparent 55%);opacity:.44}
+@supports (filter:url(#liquid-displacement)){.glass::before,.btn--secondary::before,.badge::before,.pill::before{filter:url(#liquid-displacement)}}
 html,body{max-width:100%;overflow-x:clip}
 body{background:#0a0c10;color:var(--tx);letter-spacing:-.012em}
 body::before{opacity:.11;background:radial-gradient(ellipse at 72% 48%,rgba(0,255,133,.12),transparent 42%),radial-gradient(ellipse at 18% 88%,rgba(34,113,89,.14),transparent 38%),repeating-linear-gradient(90deg,transparent 0 119px,rgba(255,255,255,.016) 120px)}
@@ -41,7 +41,7 @@ body::before{opacity:.11;background:radial-gradient(ellipse at 72% 48%,rgba(0,25
 .btn--primary{background:var(--ac);color:#06100b;box-shadow:0 12px 44px rgba(0,255,133,.2)}
 .btn--secondary{background:rgba(255,255,255,.055);border-color:rgba(255,255,255,.19);-webkit-backdrop-filter:blur(20px) saturate(170%);backdrop-filter:blur(20px) saturate(170%)}
 .ch:not(#home) .txt{padding:0;border:0;border-radius:0;background:none;backdrop-filter:none;box-shadow:none}
-.ch:not(#home) .txt>p:not(.tag,.hint,.step-count,.mini-ui){color:rgba(245,247,246,.76)}
+.ch:not(#home) .txt>p:not(.tag,.hint){color:rgba(245,247,246,.76)}
 .ch h2{font-size:clamp(2.75rem,5.8vw,6.2rem);line-height:.94;letter-spacing:-.075em;text-wrap:balance}
 .tag{font:600 .68rem/1.2 var(--f-mono);letter-spacing:.14em;text-transform:uppercase}
 .education-chapter .stage{grid-template-columns:minmax(0,1fr);justify-content:start}
@@ -52,25 +52,6 @@ body::before{opacity:.11;background:radial-gradient(ellipse at 72% 48%,rgba(0,25
 .stats{border-top-color:rgba(245,247,246,.17)}.stats b{color:#fff}
 
 /* Experience reads as one open stage. The agent map is an ambient visual field, not a dashboard card. */
-.experience-chapter{height:255vh}
-.experience-chapter .stage{grid-template-columns:minmax(0,.82fr) minmax(0,1.18fr);column-gap:4vw}
-.experience-chapter .txt{max-width:560px}
-.experience-chapter .txt h2{max-width:10ch}
-.company-mark{border:0;border-bottom:1px solid rgba(245,247,246,.25);border-radius:0;background:none;padding:.4rem .55rem;color:rgba(245,247,246,.83)}
-.company-mark i{background:rgba(0,255,133,.13);color:var(--ac)}
-.agent-console{align-self:center;min-height:0;padding:0;border:0;border-radius:0;background:none;backdrop-filter:none;box-shadow:none}
-.agent-console-top,.agent-console-foot{color:rgba(245,247,246,.48)}
-.agent-network{height:min(52vh,480px);margin:1rem 0}
-.agent-network svg path{stroke:rgba(245,247,246,.26)}.agent-network svg path+path{stroke:rgba(0,255,133,.57)}
-.agent-core{width:116px;height:116px;border-color:rgba(0,255,133,.62);background:radial-gradient(circle,rgba(0,255,133,.3),rgba(0,255,133,.06) 58%,transparent);box-shadow:0 0 0 17px rgba(0,255,133,.04),0 0 65px rgba(0,255,133,.25)}
-.agent-node{border-color:rgba(245,247,246,.2);background:rgba(13,18,15,.64);backdrop-filter:blur(18px) saturate(160%)}
-.agent-node>i{background:rgba(0,255,133,.14);color:var(--ac)}
-.agent-orbit{border-color:rgba(0,255,133,.26)}.agent-orbit--two{border-color:rgba(245,247,246,.14)}
-.agent-console-foot{border-color:rgba(245,247,246,.14)}
-.mini-ui{border-color:var(--ac);background:rgba(0,255,133,.045);color:#a3ffd0}
-.mini-ui::after{content:"";display:inline-block;width:.45em;height:1em;margin-left:.22em;vertical-align:-.16em;background:var(--ac);opacity:.75;animation:caret-pulse 1s steps(2,end) infinite}
-@keyframes caret-pulse{50%{opacity:.12}}
-
 /* Selected projects become a sequence of large canvases. The wheel/track movement is scrubbed with scroll. */
 .project-chapter{height:390vh;overflow:clip}
 .project-stage{display:block;padding:0 var(--pad-x)}
@@ -193,16 +174,6 @@ body::before{opacity:.11;background:radial-gradient(ellipse at 72% 48%,rgba(0,25
   #home .stage{padding-top:27vh}
   .education-chapter .stage{align-items:center}
   .education-chapter .txt{width:100%;max-height:78vh;overflow:auto;margin:0;padding:0!important}
-  .experience-chapter{height:300vh}
-  .experience-chapter .stage{display:block;padding-top:14vh}
-  #experience.ch .txt{position:relative;z-index:2;max-width:none;max-height:none;overflow:visible;padding-right:.3rem!important;gap:.62rem}
-  .experience-chapter .txt h2{max-width:12ch;font-size:clamp(2.5rem,9vw,4rem)}
-  .company-strip{gap:.2rem .8rem}.company-mark{font-size:.48rem}
-  .steps{gap:.75rem}.step{gap:.24rem}.step h3{font-size:1rem}.step p{font-size:.8rem;line-height:1.35}
-  .mini-ui{font-size:.58rem}
-  .agent-console{position:absolute;right:var(--pad-x);bottom:1vh;left:var(--pad-x);display:block;width:auto;height:17vh;min-height:138px;padding:0}
-  .agent-console-top{font-size:.55rem}.agent-network{height:calc(100% - 30px);margin:.2rem 0}
-  .agent-console-foot{display:none}.agent-node{min-width:82px;padding:.35rem .45rem;gap:.3rem;border-radius:9px}.agent-node>i{width:22px;height:22px}.agent-node>span{font-size:.58rem}.agent-node small{font-size:.42rem}.agent-core{width:68px;height:68px}.agent-core>span{font-size:1rem}.agent-core small{font-size:.34rem}.agent-orbit{width:118px;height:70px}.agent-orbit--two{width:158px;height:105px}
   .project-chapter{height:310vh}
   .project-heading{top:12vh;left:var(--pad-x);width:calc(100% - 2 * var(--pad-x))}
   .project-heading h2{font-size:clamp(3rem,12vw,5.1rem)}
@@ -249,8 +220,8 @@ body::before{opacity:.11;background:radial-gradient(ellipse at 72% 48%,rgba(0,25
   .office-scene figcaption{font-size:.45rem}.social-tile{padding:.7rem .55rem}
 }
 @media(prefers-reduced-motion:reduce){
-  .agent-network svg path,.agent-node,.agent-orbit,.office-agent{animation:none!important}
+  .office-agent{animation:none!important}
   .project-scene,.social-tile,.film-frame{transition:none!important}
 }
-body.nm .agent-network svg path,body.nm .agent-node,body.nm .agent-orbit,body.nm .office-agent{animation:none!important}
+body.nm .office-agent{animation:none!important}
 body.nm .project-scene,body.nm .social-tile,body.nm .film-frame{transition:none!important}

@@ -31,6 +31,7 @@
   <a class="skip" href="#main">Skip to content</a>
   <div id="hero-video" aria-hidden="true"><video muted loop playsinline preload="none"></video></div>
   <canvas id="gl" aria-hidden="true"></canvas>
+  <img id="gl-fallback" src="/media/3d-avatar-fallback.png" alt="" aria-hidden="true">
   <div id="splash" role="status" aria-label="Loading"></div>
   <nav id="pill" class="pill" aria-label="Main" hidden></nav>
   <svg class="svg-defs" aria-hidden="true" focusable="false"><filter id="liquid-displacement" x="-30%" y="-30%" width="160%" height="160%"><feTurbulence type="fractalNoise" baseFrequency=".035" numOctaves="2" seed="4" result="surface"/><feDisplacementMap in="SourceGraphic" in2="surface" scale="5" xChannelSelector="R" yChannelSelector="G"/></filter></svg>
@@ -68,47 +69,47 @@
       </div></div>
     </section>
 
-    <section id="experience" class="ch L experience-chapter" data-g="eng" aria-labelledby="t-experience">
-      <div class="stage"><div class="txt">
-        <p class="tag fx">03 / Experience</p>
-        <h2 id="t-experience" class="rv">The AI, and the plumbing around it.</h2>
-        <p class="step-count meta" data-step-count aria-live="polite">01 / 02</p>
-        <div class="company-strip fx" aria-label="Organizations">
-          <span class="company-mark company-mark--aidece"><i>AI</i><b>.DECE</b></span>
-          <span class="company-mark company-mark--quantum"><i>Q</i><b>QUANTUM INFRA</b></span>
-          <span class="company-mark company-mark--umn"><i>UMN</i><b>ECO · INFINITE</b></span>
-        </div>
-        <div class="steps fx">
-          <article class="step">
-            <h3>AI Engineer Intern, AI.DECE</h3>
-            <p class="meta">Feb 2025 to Feb 2026</p>
-            <p>LLM and RAG work for document processing, semantic search, automated reporting and data visualization.</p>
-            <ul class="chips"><li class="chip">LangChain</li><li class="chip">ChromaDB</li><li class="chip">Weaviate</li><li class="chip">Next.js</li><li class="chip">Docker</li></ul>
+    <section id="experience" class="ch experience-chapter" data-g="eng" aria-labelledby="t-experience">
+      <div class="stage experience-stage">
+        <header class="experience-heading">
+          <p class="tag">03 / Experience</p>
+          <h2 id="t-experience">Code, campaigns &amp; frames.</h2>
+          <p class="experience-instruction">Scroll to move through the roles.</p>
+        </header>
+        <div class="experience-progress" aria-hidden="true"><span data-role-progress></span></div>
+        <p class="experience-count meta" data-role-count data-current="0" aria-live="polite" aria-atomic="true">01 / 07</p>
+        <div class="experience-deck" data-experience-deck aria-label="Experience roles">
+          <article class="experience-card experience-card--engineer" data-experience-card>
+            <header class="experience-card-top"><span class="experience-wordmark">AI.DECE</span><span class="experience-index">01</span></header>
+            <div class="experience-card-content"><p class="experience-date">Feb 2025 — Feb 2026</p><h3>AI Engineer <em>Intern</em></h3><p class="experience-detail">LLM and RAG for document processing, semantic search, automated reporting, and data visualization.</p><ul class="chips" aria-label="Tools"><li class="chip">LangChain</li><li class="chip">ChromaDB</li><li class="chip">Weaviate</li><li class="chip">Next.js</li><li class="chip">Docker</li></ul></div>
           </article>
-          <article class="step">
-            <h3>R&amp;D Intern, PT Quantum Infra Solusindo</h3>
-            <p class="meta">Feb to Apr 2025</p>
-            <p>Asynchronous message queue and a real-time monitoring dashboard for hospital-oriented systems.</p>
-            <ul class="chips"><li class="chip">RabbitMQ</li><li class="chip">Next.js</li></ul>
+          <article class="experience-card experience-card--engineer" data-experience-card>
+            <header class="experience-card-top"><span class="experience-wordmark">PT Quantum Infra Solusindo</span><span class="experience-index">02</span></header>
+            <div class="experience-card-content"><p class="experience-date">Feb 2025 — Apr 2025</p><h3>R&amp;D <em>Intern</em></h3><p class="experience-detail">Asynchronous message queue with RabbitMQ and a real-time monitoring dashboard with Next.js for hospital-oriented systems.</p><ul class="chips" aria-label="Tools"><li class="chip">RabbitMQ</li><li class="chip">Next.js</li></ul></div>
+          </article>
+          <article class="experience-card experience-card--creative" data-experience-card>
+            <header class="experience-card-top"><span class="experience-wordmark">Bangsar Heights Pavilion Sdn Bhd</span><span class="experience-index">03</span></header>
+            <div class="experience-card-content"><p class="experience-date">Nov 2024 — Feb 2026 · Remote · Malaysia</p><h3>Digital Marketing <em>Consultant</em></h3><p class="experience-detail">Brochures, banners, flyers, booth and Instagram design, Instagram and Facebook ads, and visual branding.</p><p class="experience-proof"><b>200,000+</b><span>campaign views</span></p></div>
+          </article>
+          <article class="experience-card experience-card--engineer" data-experience-card>
+            <header class="experience-card-top"><span class="experience-wordmark">UMN ECO · Infinite UMN</span><span class="experience-index">04</span></header>
+            <div class="experience-card-content"><p class="experience-date">2024</p><h3>Web <em>Developer</em></h3><ul class="chips" aria-label="Tools"><li class="chip">React</li><li class="chip">Laravel</li></ul></div>
+          </article>
+          <article class="experience-card experience-card--community" data-experience-card>
+            <header class="experience-card-top"><span class="experience-wordmark">PPIF</span><span class="experience-index">05</span></header>
+            <div class="experience-card-content"><p class="experience-date">2024</p><h3>Person <em>in Charge</em></h3></div>
+          </article>
+          <article class="experience-card experience-card--community" data-experience-card>
+            <header class="experience-card-top"><span class="experience-wordmark">Campus Visit</span><span class="experience-index">06</span></header>
+            <div class="experience-card-content"><p class="experience-date">2023</p><h3>MC, PIC &amp; <em>Marketing</em></h3></div>
+          </article>
+          <article class="experience-card experience-card--creative" data-experience-card>
+            <header class="experience-card-top"><span class="experience-wordmark">Video</span><span class="experience-index">07</span></header>
+            <div class="experience-card-content"><p class="experience-date">Video editing · Cinematography · Photography</p><h3>Video <em>Editor</em></h3><ul class="chips" aria-label="Tools"><li class="chip">Premiere Pro</li><li class="chip">After Effects</li></ul></div>
           </article>
         </div>
-        <p class="mini-ui meta" data-mini-ui aria-hidden="true">&gt; Which tools did Jackson use for RAG?</p>
-        <p class="fx sm">Also: Web Developer for UMN ECO 2024 and Infinite UMN 2024 (React + Laravel), PIC of PPIF 2024.</p>
-        <p class="fx"><span data-toolkit-summary>19 tools across 5 disciplines</span> &middot; <a data-link href="/about#toolkit">See full toolkit</a></p>
+        <p class="experience-toolkit"><span data-toolkit-summary></span> · <a data-link href="/about#toolkit">See full toolkit</a></p>
       </div>
-      <aside class="agent-console fx" aria-label="A visual simulation of an AI agent workspace">
-        <div class="agent-console-top"><span class="meta">Agent orchestration</span><span class="agent-live"><i></i> 04 active</span></div>
-        <div class="agent-network" aria-hidden="true">
-          <svg viewBox="0 0 420 280" preserveAspectRatio="none"><path d="M210 140 83 70M210 140 338 65M210 140 80 210M210 140 342 210"/><path d="M83 70 80 210M338 65 342 210"/></svg>
-          <div class="agent-core"><span>JL</span><small>SHARED MEMORY</small></div>
-          <div class="agent-node agent-node--research"><i>⌕</i><span>Research<small>2 tasks</small></span></div>
-          <div class="agent-node agent-node--rag"><i>⌘</i><span>RAG<small>3 sources</small></span></div>
-          <div class="agent-node agent-node--data"><i>⌁</i><span>Data<small>Live sync</small></span></div>
-          <div class="agent-node agent-node--creative"><i>✳</i><span>Creative<small>1 draft</small></span></div>
-          <span class="agent-orbit agent-orbit--one"></span><span class="agent-orbit agent-orbit--two"></span>
-        </div>
-        <div class="agent-console-foot"><span>Memory shared across the team</span><span>SIMULATION / 01</span></div>
-      </aside></div>
     </section>
 
     <section id="projects" class="ch project-chapter" data-g="eng" aria-labelledby="t-projects">

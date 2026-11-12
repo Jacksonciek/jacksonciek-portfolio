@@ -33,27 +33,39 @@ function prepareDecorativeContent() {
 }
 
 function experience(t) {
-  const steps = [...document.querySelectorAll('#experience .step')];
-  if (steps.length < 2) return;
-  const consolePanel = document.querySelector('.agent-console');
-  if (consolePanel && matchMedia('(max-width:760px)').matches) {
-    const reveal = smooth(.5, .68, t);
-    consolePanel.style.opacity = String(reveal);
-    consolePanel.style.visibility = reveal > .02 ? 'visible' : 'hidden';
-    consolePanel.style.transform = `translateY(${(1 - reveal) * 14}px)`;
+  const cards = [...document.querySelectorAll('[data-experience-card]')];
+  if (!cards.length) return;
+  const position = clamp01(t) * (cards.length - 1);
+  const cardHeight = document.querySelector('[data-experience-deck]')?.offsetHeight || innerHeight * .55;
+  cards.forEach((card, i) => {
+    const distance = i - position;
+    let y, scale, rotation, opacity;
+    if (distance >= 0) {
+      const depth = Math.min(distance, 2.6);
+      y = depth * 24;
+      scale = 1 - depth * .045;
+      rotation = depth * .8;
+      opacity = Math.max(0, 1 - depth * .23);
+    } else {
+      const depth = Math.min(-distance, 1.4);
+      y = -depth * cardHeight * 1.05;
+      scale = 1 - depth * .04;
+      rotation = -depth * 2;
+      opacity = Math.max(0, 1 - Math.pow(depth, 1.55) * 1.05);
+    }
+    card.style.transform = `translate3d(0,${y}px,0) rotate(${rotation}deg) scale(${scale})`;
+    card.style.opacity = String(opacity);
+    card.style.visibility = opacity > .02 ? 'visible' : 'hidden';
+    card.style.zIndex = String(1000 - Math.round(Math.abs(distance) * 12));
+  });
+  const active = Math.min(cards.length - 1, Math.floor(position + .5));
+  const counter = document.querySelector('[data-role-count]');
+  if (counter && counter.dataset.current !== String(active)) {
+    counter.dataset.current = String(active);
+    counter.textContent = `${String(active + 1).padStart(2, '0')} / ${String(cards.length).padStart(2, '0')}`;
   }
-  const a = 1 - smooth(.4, .55, t), b = smooth(.45, .6, t);
-  steps[0].style.setProperty('--step-opacity', String(a));
-  steps[1].style.setProperty('--step-opacity', String(b));
-  steps[0].setAttribute('aria-hidden', String(a < .1));
-  steps[1].setAttribute('aria-hidden', String(b < .1));
-  const counter = document.querySelector('[data-step-count]');
-  if (counter) counter.textContent = t < .5 ? '01 / 02' : '02 / 02';
-  const line = document.querySelector('[data-mini-ui]');
-  if (!line) return;
-  const question = '> Which tools did Jackson use for RAG?';
-  if (t < .52) line.textContent = question;
-  else line.textContent = `queue depth ${Math.max(1, Math.round(smooth(.55, .95, t) * 128))} msgs`;
+  const progress = document.querySelector('[data-role-progress]');
+  if (progress) progress.style.transform = `scaleX(${clamp01(t)})`;
 }
 
 function updateProjects(t) {
@@ -98,18 +110,17 @@ function contact(t) {
 }
 
 function resetStatic() {
-  const steps = [...document.querySelectorAll('#experience .step')];
-  steps.forEach((step) => { step.style.removeProperty('--step-opacity'); step.removeAttribute('aria-hidden'); });
-  const counter = document.querySelector('[data-step-count]'); if (counter) counter.textContent = '02 / 02';
-  const line = document.querySelector('[data-mini-ui]'); if (line) line.textContent = 'queue depth 128 msgs';
-  const consolePanel = document.querySelector('.agent-console');
-  if (consolePanel) {
-    if (motionOn() && matchMedia('(max-width:760px)').matches) {
-      consolePanel.style.opacity = '0'; consolePanel.style.visibility = 'hidden'; consolePanel.style.transform = 'translateY(14px)';
-    } else {
-      consolePanel.style.removeProperty('opacity'); consolePanel.style.removeProperty('visibility'); consolePanel.style.removeProperty('transform');
-    }
-  }
+  document.querySelector('#experience')?.classList.remove('is-scrolling');
+  document.querySelectorAll('[data-experience-card]').forEach((card) => {
+    card.style.removeProperty('transform');
+    card.style.removeProperty('opacity');
+    card.style.removeProperty('visibility');
+    card.style.removeProperty('z-index');
+  });
+  const counter = document.querySelector('[data-role-count]');
+  if (counter) { counter.dataset.current = '0'; counter.textContent = `01 / ${String(document.querySelectorAll('[data-experience-card]').length).padStart(2, '0')}`; }
+  const progress = document.querySelector('[data-role-progress]');
+  if (progress) progress.style.removeProperty('transform');
   const macbook = document.querySelector('[data-macbook]');
   if (macbook) macbook.style.setProperty('--lid-open', motionOn() ? '0' : '1');
   if (macbook) macbook.style.setProperty('--screen-arrive', motionOn() ? '0' : '1');
@@ -124,6 +135,7 @@ function resetStatic() {
 
 function build() {
   ctx = gsap.context(() => {
+    document.querySelector('#experience')?.classList.add('is-scrolling');
     const add = (id, onUpdate) => ScrollTrigger.create({
       trigger: `#${id}`, start: 'top top', end: 'bottom bottom',
       onUpdate: (self) => { if (motionOn()) onUpdate(self.progress); },
