@@ -99,7 +99,7 @@ export function initRouter({ sheet } = {}) {
       const selector = routePath === '/about' && location.hash === '#toolkit' ? '#about-toolkit' : location.hash;
       panel.querySelector(selector)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }, 120);
-    panel.animate([{ opacity: 0, transform: document.body.classList.contains('nm') ? 'none' : 'translateY(22px)' }, { opacity: 1, transform: 'translateY(0)' }], { duration: document.body.classList.contains('nm') ? 140 : 420, easing: 'cubic-bezier(.32,.72,0,1)' });
+    panel.animate([{ opacity: 0, transform: document.body.classList.contains('nm') ? 'none' : 'translateY(22px)' }, { opacity: 1, transform: 'translateY(0)' }], { duration: document.body.classList.contains('nm') ? 140 : 260, easing: 'cubic-bezier(.32,.72,0,1)' });
     current = routePath;
   }
 

@@ -17,13 +17,13 @@ export function render() {
   const root = node('div', 'page-ailab');
   root.append(pageHeader('Interactive demo / retrieval augmented generation', 'AI lab', 'Ask a question about Jackson’s education, engineering work, design or toolkit.'));
 
-  const architecture = node('section', 'architecture'); architecture.setAttribute('aria-label', 'AI lab request flow');
+  const architecture = node('section', 'architecture'); architecture.setAttribute('aria-label', 'AI lab retrieval flow');
   const flow = node('div', 'flow-strip');
-  ['Browser', 'Serverless proxy', 'OpenAI API'].forEach((label, i) => {
+  ['Portfolio notes', 'Browser retrieval', 'Best matching facts'].forEach((label, i) => {
     const box = node('div', 'flow-node'); box.append(node('span', 'meta', `0${i + 1}`), node('strong', '', label)); flow.append(box);
     if (i < 2) flow.append(node('i', 'flow-link', '→'));
   });
-  architecture.append(flow, node('p', 'page-lede', 'The key stays in the server proxy. Set the Cloudflare request limit and an enforced OpenAI monthly spend limit before enabling live answers.'));
+  architecture.append(flow, node('p', 'page-lede', 'This browser-only demo searches the curated portfolio notes and shows the strongest matches. It makes no server or API request.'));
   root.append(architecture);
 
   const ask = section('Ask the portfolio'); ask.classList.add('ask-section');
@@ -43,34 +43,22 @@ export function render() {
   ask.append(form, prompts, answer, retrieved); root.append(ask);
 
   form.addEventListener('input', () => { counter.textContent = `${input.value.length} / 300`; });
-  form.addEventListener('submit', async (event) => {
+  form.addEventListener('submit', (event) => {
     event.preventDefault();
     const question = input.value.trim();
     if (!question || question.length > 300) return;
-    const matches = retrieve(question);
+    const matches = retrieve(question).filter((match) => match.score > 0);
     const text = answer.querySelector('.answer-text');
     retrieved.querySelectorAll('.retrieved-chunk').forEach((el) => el.remove());
     matches.forEach((match) => {
       const item = node('article', 'retrieved-chunk'); item.append(node('strong', '', match.title), node('p', '', match.text)); retrieved.append(item);
     });
-    form.setAttribute('aria-busy', 'true'); flow.setAttribute('aria-busy', 'true'); askButton.disabled = true; askButton.textContent = 'Thinking';
-    text.textContent = 'Searching the portfolio notes…';
-    let result = null;
-    try {
-      const response = await fetch('/api/ask', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ question, chunks: matches.map(({ title, text: body }) => ({ title, text: body })) }) });
-      if (response.ok) result = await response.json();
-    } catch {}
-    if (result?.answer) text.textContent = result.answer;
-    else {
-      const best = matches[0];
-      text.textContent = best?.score ? `${best.text} Showing the best matching note (live model offline).` : 'I could not find a matching note in the portfolio content. Showing the best matching note (live model offline).';
-    }
-    form.removeAttribute('aria-busy'); flow.removeAttribute('aria-busy'); askButton.disabled = false; askButton.textContent = 'Ask';
+    text.textContent = matches[0] ? `${matches[0].text} This answer uses the best matching portfolio note.` : 'No matching note was found in the portfolio content.';
   });
 
   const demo = section('How the portfolio demo works'); demo.classList.add('rag-explainer');
   const steps = node('div', 'rag-steps');
-  [['01', 'Portfolio notes', 'Short, curated facts in kb.json.'], ['02', 'Browser retrieval', 'The three notes with the most shared terms.'], ['03', 'Model response', 'A serverless request with a private API key.']].forEach(([n, title, description]) => {
+  [['01', 'Portfolio notes', 'Short, curated facts in kb.json.'], ['02', 'Browser retrieval', 'The three notes with the most shared terms.'], ['03', 'Best match', 'The strongest matching note is shown in the browser.']].forEach(([n, title, description]) => {
     const item = node('article', 'rag-step'); item.append(node('span', 'meta', n), node('h3', '', title), node('p', '', description)); steps.append(item);
   });
   demo.append(steps, node('div', 'slot', 'Architecture diagram and project screencast can be added here.'));

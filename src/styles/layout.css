@@ -22,7 +22,7 @@ html.no-gl #gl-fallback{display:block}
 .foot a{display:inline-flex;align-items:center;min-height:44px}
 
 @media (max-width:760px){
-  .stage{align-items:end;padding-bottom:max(1.5rem,env(safe-area-inset-bottom))}
+  .stage{align-items:end;padding-bottom:max(1.5rem,calc(env(safe-area-inset-bottom) + 1rem))}
   .L>.stage,.R>.stage{grid-template-columns:minmax(0,1fr)}
   .L .txt,.R .txt{grid-column:1}
   .stats{flex-direction:column}

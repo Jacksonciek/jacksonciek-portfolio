@@ -12,8 +12,8 @@
   --f-mono:"SF Mono",Menlo,Consolas,"Liberation Mono",monospace;
   --ease-out:cubic-bezier(.23,1,.32,1); --ease-in-out:cubic-bezier(.77,0,.175,1);
   --ease-drawer:cubic-bezier(.32,.72,0,1);
-  --d-press:120ms; --d-hover:180ms; --d-ui:240ms; --d-panel:420ms; --d-sig:1050ms;
-  --r-s:10px; --r-m:16px; --r-pill:999px; --pad-x:7vw;
+  --d-press:120ms; --d-hover:180ms; --d-ui:240ms; --d-panel:260ms; --d-sig:1050ms;
+  --r-s:10px; --r-m:16px; --r-pill:999px; --pad-x:max(7vw,calc(env(safe-area-inset-left) + 1rem),calc(env(safe-area-inset-right) + 1rem));
   /* type scale */
   --fs-h1:clamp(2.7rem,6.2vw,5.2rem); --fs-h2:clamp(2rem,4.4vw,3.5rem);
   --fs-body:1.05rem; --fs-label:.75rem; --ls-label:.14em;

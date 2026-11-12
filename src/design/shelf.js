@@ -70,10 +70,11 @@ export function createShelf(root, works, opts = {}) {
   root.querySelector('.shelf-next').append(svgArrow(false));
   let s = N, T = N, ws = 20, d = 120, H = 220, U = 280, P = 1400, gap = 8, raf = 0, last = performance.now();
   let pointer = null, drag = false, ignoreClick = false, consumedPress = false, hovered = false, pointerPresent = false, px = 0, py = 0, visible = true, idleTimer, autoTimer, pressTimer, destroyed = false;
-  let active = -1, captionTimer = 0;
+  let active = -1, captionTimer = 0, lastRulerIndex = -1, rulerWidth = 0;
   const reduced = RM;
   const measure = () => {
     H = height(); ws = H * 142 / 840; d = H * 474 / 900; gap = H * .035; U = H * (innerWidth < 768 ? 1.05 : 1.3); P = 1400;
+    rulerWidth = ruler.clientWidth; lastRulerIndex = -1;
     root.style.setProperty('--shelf-H', `${H}px`); root.style.setProperty('--shelf-spine', `${ws}px`); root.style.setProperty('--shelf-depth', `${d}px`); root.style.setProperty('--shelf-gap', `${gap}px`);
     start();
   };
@@ -135,7 +136,10 @@ export function createShelf(root, works, opts = {}) {
       el.style.setProperty('--cv-shade', String((1 - open) * .82));
     });
     const dot = ruler.querySelector('.shelf-ruler-dot');
-    if (dot) dot.style.left = `${((idx + .5) / N) * 100}%`;
+    if (dot && idx !== lastRulerIndex) {
+      lastRulerIndex = idx;
+      dot.style.transform = `translate3d(${((idx + .5) / N) * rulerWidth}px,0,0) translateX(-50%)`;
+    }
     if (moving && settling) raf = requestAnimationFrame(draw); else raf = 0;
   };
   const start = () => { if (!raf && !destroyed && visible && !document.hidden) { last = performance.now(); raf = requestAnimationFrame(draw); } };

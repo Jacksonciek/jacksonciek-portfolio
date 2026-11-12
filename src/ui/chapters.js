@@ -51,7 +51,7 @@ function build() {
       }
       if (i < all.length - 1) { // leave over .8 to .95 (Contact stays, so its buttons remain clickable)
         if (words.length) tl.to(words, { yPercent: -130, duration: 0.1, stagger: 0.006 }, 0.8);
-        tl.to(fx, { y: -20, opacity: 0, duration: 0.1, stagger: 0.007 }, 0.8);
+        if (fx.length) tl.to(fx, { y: -20, opacity: 0, duration: 0.1, stagger: 0.007 }, 0.8);
       }
       addCounters(tl, ch);
       tl.call(() => {}, [], 1); // keep progress normalized to the full chapter without a dummy GSAP target

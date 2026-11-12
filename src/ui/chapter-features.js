@@ -7,7 +7,7 @@ import toolkit from '../content/toolkit.json';
 gsap.registerPlugin(ScrollTrigger);
 const clamp01 = (v) => Math.max(0, Math.min(1, v));
 const smooth = (a, b, x) => { const t = clamp01((x - a) / (b - a)); return t * t * (3 - 2 * t); };
-let ctx, gl;
+let ctx, gl, contactGlyphs = [], contactGlyphWidths = [];
 
 function prepareDecorativeContent() {
   const railWindow = document.querySelector('[data-project-rail-window]');
@@ -44,6 +44,13 @@ function prepareDecorativeContent() {
   if (mark && !mark.children.length) [...'Jackson Lawrence'].forEach((char) => {
     const letter = document.createElement('span'); letter.textContent = char === ' ' ? '\u00a0' : char; letter.setAttribute('aria-hidden', 'true'); mark.append(letter);
   });
+  if (mark) {
+    contactGlyphs = [...mark.children];
+    const measureGlyphs = () => { contactGlyphWidths = contactGlyphs.map((letter) => letter.getBoundingClientRect().width); };
+    measureGlyphs();
+    document.fonts?.ready.then(measureGlyphs);
+    addEventListener('resize', measureGlyphs, { passive: true });
+  }
   const names = toolkit.groups.flatMap((group) => group.tools);
   const summary = `${names.length} tools across ${toolkit.groups.length} disciplines`;
   document.querySelectorAll('[data-toolkit-summary]').forEach((el) => { el.textContent = summary; });
@@ -212,11 +219,16 @@ function video(t) {
 }
 
 function contact(t) {
-  const letters = [...document.querySelectorAll('.contact-mark span')];
+  const letters = contactGlyphs;
   const amount = smooth(.3, .8, t);
+  let compacted = 0;
   letters.forEach((letter, i) => {
-    if (i === 0 || i === 8) { letter.style.maxWidth = '.85em'; letter.style.opacity = '1'; }
-    else { letter.style.maxWidth = `${.72 * (1 - amount)}em`; letter.style.opacity = String(1 - amount); }
+    const fixed = i === 0 || i === 8;
+    const shift = i > 0 ? compacted * amount : 0;
+    const scale = fixed ? 1 : 1 - amount;
+    letter.style.transform = `translate3d(${-shift}px,0,0) scaleX(${scale})`;
+    letter.style.opacity = fixed ? '1' : String(1 - amount);
+    if (i > 0 && !fixed) compacted += contactGlyphWidths[i] || 0;
   });
 }
 
@@ -258,7 +270,8 @@ function resetStatic() {
     element.style.removeProperty('transform');
   });
   document.querySelectorAll('.contact-mark span').forEach((letter, i) => {
-    if (i !== 0 && i !== 8) { letter.style.maxWidth = '.72em'; letter.style.opacity = '1'; }
+    letter.style.removeProperty('transform');
+    letter.style.opacity = '1';
   });
   const track = document.querySelector('[data-film-track]');
   if (track) track.style.transform = '';

@@ -4,7 +4,7 @@
   display:inline-flex;align-items:center;justify-content:center;gap:.5rem;
   min-height:44px;padding:0 1.4rem;border:1px solid transparent;border-radius:var(--r-pill);
   font:600 .95rem/1 var(--f-sans);color:var(--tx);text-decoration:none;cursor:pointer;
-  transition:transform var(--d-press) var(--ease-out),background-color var(--d-hover) var(--ease-out),border-color var(--d-hover) var(--ease-out);
+  transition:transform var(--d-press) var(--ease-out);
 }
 .btn--primary{background:var(--ac);color:var(--ink)}
 .btn::after{ /* shine sweep, sits under the label */
@@ -29,7 +29,7 @@
   .btn:hover{transform:translateY(-2px)}
   .btn--primary:hover{background-color:color-mix(in srgb,var(--ac) 86%,#fff)}
   .btn--secondary:hover{background-color:rgba(255,255,255,.2);border-color:rgba(255,255,255,.4)}
-  .btn:hover::after{transform:translateX(120%);transition:transform 650ms var(--ease-out)}
+  .btn:hover::after{transform:translateX(120%);transition:transform 260ms var(--ease-out)}
 }
 .btn:active{transform:scale(.97)}
 
@@ -45,7 +45,7 @@
 .sep{opacity:.6}
 
 /* glass pill shell (filled in Stage 2) */
-.pill{position:fixed;top:max(.75rem,env(safe-area-inset-top));left:50%;translate:-50% 0;z-index:30;border-radius:var(--r-pill);transform-origin:50% 0}
+.pill{position:fixed;top:max(.75rem,calc(env(safe-area-inset-top) + .5rem));left:50%;translate:-50% 0;z-index:30;border-radius:var(--r-pill);transform-origin:50% 0}
 
 /* dashed slot for assets Jackson has not supplied yet */
 .slot{display:grid;place-items:center;width:100%;min-height:7rem;padding:1rem;border:1.5px dashed var(--glass-line);border-radius:var(--r-m);text-align:center;font:600 var(--fs-label)/1.4 var(--f-mono);text-transform:uppercase;letter-spacing:var(--ls-label)}
