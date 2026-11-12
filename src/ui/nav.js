@@ -48,6 +48,10 @@ export function initNav() {
   brand.addEventListener('click', () => (compact.matches ? setOpen(!open) : scrollToChapter(0)));
   pill.addEventListener('click', onLink);
   menu.addEventListener('click', onLink);
+  document.querySelectorAll('a[data-chapter-jump]').forEach((anchor) => anchor.addEventListener('click', (event) => {
+    event.preventDefault();
+    scrollToChapter(anchor.dataset.chapterJump);
+  }));
   document.addEventListener('keydown', (event) => {
     if (event.key === 'Escape' && open) { setOpen(false); brand.focus(); }
   });

@@ -30,8 +30,8 @@ initNav();
 const sheet = createWorkSheet();
 createShelf(document.getElementById('shelf-slot'), works, { onOpen: (work, rect, opener, list) => sheet.open(work, rect, opener, list) });
 initPalette(); // before initChapters, so the first jl:chapter already finds the listener
-initChapters();
 initChapterFeatures();
+initChapters();
 initRouter({ sheet });
 
 // Splash progress is real: fonts ready, window load and the GL scene, one third each.

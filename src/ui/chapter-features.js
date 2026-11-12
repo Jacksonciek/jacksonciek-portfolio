@@ -47,6 +47,47 @@ function prepareDecorativeContent() {
   const names = toolkit.groups.flatMap((group) => group.tools);
   const summary = `${names.length} tools across ${toolkit.groups.length} disciplines`;
   document.querySelectorAll('[data-toolkit-summary]').forEach((el) => { el.textContent = summary; });
+  const toolkitCount = document.querySelector('[data-toolkit-count]');
+  if (toolkitCount) toolkitCount.dataset.to = String(names.length);
+  const disciplineCount = document.querySelector('[data-toolkit-disciplines]');
+  if (disciplineCount) disciplineCount.dataset.to = String(toolkit.groups.length);
+  const groupList = document.querySelector('[data-toolkit-groups]');
+  if (groupList && !groupList.children.length) toolkit.groups.forEach((group) => {
+    const row = document.createElement('li'); row.className = 'toolkit-group'; row.dataset.kind = group.kind;
+    const heading = document.createElement('div'); heading.className = 'toolkit-group-heading';
+    const title = document.createElement('h3'); title.textContent = group.name;
+    const count = document.createElement('span'); count.className = 'toolkit-group-count'; count.textContent = `${String(group.tools.length).padStart(2, '0')} TOOLS`;
+    heading.append(title, count);
+    const tools = document.createElement('ul'); tools.className = 'toolkit-tools';
+    group.tools.forEach((name) => { const item = document.createElement('li'); item.textContent = name; tools.append(item); });
+    row.append(heading, tools); groupList.append(row);
+  });
+  const office = document.querySelector('.office-scene');
+  const officeStatus = office?.querySelector('[data-office-status]');
+  const updateOfficeStatus = (station) => { if (officeStatus) officeStatus.textContent = station?.dataset.officeMessage || 'Select a station. Contact links are also listed below.'; };
+  if (office && !office.dataset.stationEvents) {
+    office.dataset.stationEvents = '1';
+    const stationFor = (target) => target?.closest?.('.office-station');
+    office.addEventListener('pointerover', (event) => updateOfficeStatus(stationFor(event.target)));
+    office.addEventListener('pointerout', (event) => {
+      const current = stationFor(event.target), next = stationFor(event.relatedTarget);
+      if (current && next) updateOfficeStatus(next);
+      else updateOfficeStatus(null);
+    });
+    office.addEventListener('focusin', (event) => updateOfficeStatus(stationFor(event.target)));
+    office.addEventListener('focusout', (event) => updateOfficeStatus(stationFor(event.relatedTarget)));
+    office.addEventListener('click', (event) => { const station = stationFor(event.target); if (station?.tagName === 'BUTTON') updateOfficeStatus(station); });
+    office.querySelectorAll('.office-station').forEach((station) => {
+      station.addEventListener('pointerenter', (event) => {
+        if (event.pointerType !== 'mouse' || !motionOn()) return;
+        gsap.to(station, { y: -1, opacity: .9, duration: .16, ease: 'power1.out', overwrite: true });
+      });
+      station.addEventListener('pointerleave', (event) => {
+        if (event.pointerType !== 'mouse' || !motionOn()) return;
+        gsap.to(station, { y: 0, opacity: 1, duration: .16, ease: 'power1.out', overwrite: true });
+      });
+    });
+  }
   const marquee = document.querySelector('.tool-marquee');
   if (marquee && !marquee.children.length) {
     const list = names.map((name) => `<span>${name}</span>`).join('<i aria-hidden="true">✳</i>');

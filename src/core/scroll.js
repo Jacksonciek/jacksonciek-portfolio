@@ -31,6 +31,13 @@ export function unlock() {
 }
 
 export function scrollToChapter(target, progress = 0.22) {
+  const panel = document.getElementById('pg');
+  if (panel && !panel.hidden) {
+    const hash = typeof target === 'string' && target !== 'home' ? `#${target}` : '';
+    history.pushState({ jl: true }, '', `/${hash}`);
+    dispatchEvent(new PopStateEvent('popstate'));
+    return;
+  }
   const el = typeof target === 'number'
     ? document.querySelectorAll('.ch')[target]
     : document.getElementById(target);

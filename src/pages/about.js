@@ -72,7 +72,7 @@ export function render() {
   ['IT Specialist (Artificial Intelligence)', 'Huawei HCIA-AI V3.5', 'Python Intermediate', 'Competitive Programming', 'Introduction to Programming Using Python', 'South Korea student exchange, 2019', 'Math olympiad medals: HKIMO, TIMO, SEAMO and AIMO (2017–2019)'].forEach((item) => list.append(node('li', '', item)));
   credentials.append(list); school.append(education, credentials); root.append(school);
 
-  const kit = section('The tools behind the work'); kit.id = 'toolkit'; kit.classList.add('toolkit-section');
+  const kit = section('The tools behind the work'); kit.id = 'about-toolkit'; kit.classList.add('toolkit-section');
   const allTools = toolkit.groups.flatMap((group) => group.tools);
   kit.append(node('p', 'page-lede', `${allTools.length} tools across ${toolkit.groups.length} disciplines.`));
   const groups = node('div', 'toolkit-groups');

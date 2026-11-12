@@ -54,7 +54,11 @@ export function initRouter({ sheet } = {}) {
       dispose(); current = '/'; panel.hidden = true; panel.classList.remove('pg-open');
       document.body.classList.remove('panel-open');
       if (locked) { unlock(); locked = false; }
-      if (location.hash) requestAnimationFrame(() => document.querySelector(location.hash)?.scrollIntoView({ behavior: 'smooth', block: 'start' }));
+      if (location.hash) requestAnimationFrame(() => {
+        const target = document.querySelector(location.hash);
+        if (target?.classList.contains('ch')) scrollToChapter(target.id);
+        else target?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });
       else if (wasPage || scrollY > innerHeight * .5) scrollToChapter(0);
       if (wasPage) requestAnimationFrame(() => document.dispatchEvent(new CustomEvent('jl:home-return')));
       opener?.focus?.({ preventScroll: true }); opener = null;
@@ -91,7 +95,10 @@ export function initRouter({ sheet } = {}) {
     if (!locked) { lock(); locked = true; }
     releaseTrap = trapFocus(panel);
     panel.focus({ preventScroll: true });
-    if (location.hash) setTimeout(() => panel.querySelector(location.hash)?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 120);
+    if (location.hash) setTimeout(() => {
+      const selector = routePath === '/about' && location.hash === '#toolkit' ? '#about-toolkit' : location.hash;
+      panel.querySelector(selector)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 120);
     panel.animate([{ opacity: 0, transform: document.body.classList.contains('nm') ? 'none' : 'translateY(22px)' }, { opacity: 1, transform: 'translateY(0)' }], { duration: document.body.classList.contains('nm') ? 140 : 420, easing: 'cubic-bezier(.32,.72,0,1)' });
     current = routePath;
   }
@@ -116,6 +123,13 @@ export function initRouter({ sheet } = {}) {
       history.pushState({ jl: true }, '', '/'); render();
     }
   });
-  if (normalPath(location.pathname) !== '/') render(); else meta('/');
+  if (normalPath(location.pathname) !== '/') render();
+  else {
+    meta('/');
+    if (location.hash) requestAnimationFrame(() => {
+      const target = document.querySelector(location.hash);
+      if (target?.classList.contains('ch')) scrollToChapter(target.id);
+    });
+  }
   return { navigate };
 }
