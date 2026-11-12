@@ -30,10 +30,15 @@ export function unlock() {
   document.documentElement.classList.remove('is-locked');
 }
 
-export function scrollToChapter(i) {
-  const el = document.querySelectorAll('.ch')[i];
-  if (!el) return;
-  const y = i === 0 ? 0 : el.getBoundingClientRect().top + scrollY + 0.22 * (el.offsetHeight - innerHeight);
+export function scrollToChapter(target, progress = 0.22) {
+  const el = typeof target === 'number'
+    ? document.querySelectorAll('.ch')[target]
+    : document.getElementById(target);
+  if (!el) {
+    if (target === 'toolkit') window.location.assign('/about#toolkit');
+    return;
+  }
+  const y = el.id === 'home' ? 0 : el.getBoundingClientRect().top + scrollY + progress * (el.offsetHeight - innerHeight);
   if (lenis) lenis.scrollTo(y, { duration: 1.2, force: true });
   else window.scrollTo({ top: y, behavior: 'auto' });
 }

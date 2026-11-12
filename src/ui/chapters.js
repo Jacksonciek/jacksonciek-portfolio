@@ -16,7 +16,7 @@ const smooth = (a, b, x) => { const t = Math.min(1, Math.max(0, (x - a) / (b - a
 // The heading keeps its accessible name through aria-label; the word spans are aria-hidden.
 function splitWords(h) {
   if (!h.dataset.split) {
-    h.setAttribute('aria-label', h.textContent.replace(/\s+/g, ' ').trim());
+    if (!h.hasAttribute('aria-label')) h.setAttribute('aria-label', (h.innerText || h.textContent).replace(/\s+/g, ' ').trim());
     const walk = (node) => [...node.childNodes].forEach((n) => {
       if (n.nodeType === 1) return walk(n);
       if (n.nodeType !== 3) return;
@@ -72,7 +72,7 @@ function initEmitter() {
     chapterState = { i, j, e };
     if (key === last) return;
     last = key;
-    document.dispatchEvent(new CustomEvent('jl:chapter', { detail: { i, j, e } }));
+    document.dispatchEvent(new CustomEvent('jl:chapter', { detail: { i, j, e, id: secs[i]?.id } }));
   };
   const measure = (s = scrollY) => {
     tops = secs.map((section) => section.getBoundingClientRect().top + scrollY);

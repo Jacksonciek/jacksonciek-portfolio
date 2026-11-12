@@ -53,7 +53,7 @@ body::before{opacity:.11;background:radial-gradient(ellipse at 72% 48%,rgba(0,25
 
 /* Experience reads as one open stage. The agent map is an ambient visual field, not a dashboard card. */
 /* Selected projects become a sequence of large canvases. The wheel/track movement is scrubbed with scroll. */
-.project-chapter{height:390vh;overflow:clip}
+.project-chapter{height:390svh;overflow:clip}
 .project-stage{display:block;padding:0 var(--pad-x)}
 .project-heading{position:absolute;z-index:2;top:13vh;left:var(--pad-x);width:min(55vw,760px)}
 .project-heading h2{margin:.7rem 0 1rem;font-size:clamp(3.2rem,7.3vw,8rem);line-height:.84}
@@ -63,7 +63,7 @@ body::before{opacity:.11;background:radial-gradient(ellipse at 72% 48%,rgba(0,25
 .project-progress{position:absolute;top:16vh;right:var(--pad-x);display:grid;gap:.6rem;text-align:right;color:rgba(245,247,246,.46);font-size:.57rem;letter-spacing:.1em}
 .project-progress span:first-child{color:var(--ac);font-size:.8rem}
 .project-runway-window{position:absolute;inset:49vh 0 3vh;min-width:0;overflow:hidden;mask-image:linear-gradient(90deg,transparent,#000 3%,#000 97%,transparent)}
-.project-runway-track{display:flex;align-items:center;gap:2vw;width:max-content;height:100%;will-change:transform}
+.project-runway-track{display:flex;align-items:center;gap:2vw;width:max-content;height:100%}
 .project-scene{position:relative;isolation:isolate;display:grid;grid-template-rows:auto 1fr auto;align-content:stretch;width:min(84vw,1320px);height:100%;min-height:0;overflow:hidden;padding:clamp(1rem,2.4vw,2.5rem);border:0;border-radius:4px;color:var(--tx);text-decoration:none;background:radial-gradient(ellipse at 70% 45%,rgba(0,255,133,.13),transparent 42%),linear-gradient(135deg,#111714,#0b100e 58%,#101412);transition:filter .45s ease}
 .project-scene::after{content:"";position:absolute;z-index:-1;inset:0;opacity:.65;pointer-events:none;background:linear-gradient(110deg,rgba(0,255,133,.035),transparent 46%),repeating-linear-gradient(90deg,transparent 0 99px,rgba(245,247,246,.025) 100px)}
 .project-scene-meta{color:rgba(245,247,246,.55);font:600 .62rem/1 var(--f-mono);letter-spacing:.13em}
@@ -75,11 +75,46 @@ body::before{opacity:.11;background:radial-gradient(ellipse at 72% 48%,rgba(0,25
 .project-scene-copy h3{max-width:14ch;margin:0;font-size:clamp(1.25rem,2.2vw,2.25rem);font-weight:550;letter-spacing:-.05em}
 .project-scene-copy>span{display:flex;align-items:center;gap:1.2rem;color:rgba(245,247,246,.58);font-size:.78rem}
 .project-scene-copy i{font-size:1.2rem;font-style:normal}
+.project-runway-window:focus-visible{outline:2px solid var(--ac);outline-offset:5px}
+.project-scene:focus-visible{outline:2px solid var(--ac);outline-offset:-5px}
 .project-scene--mobile .project-scene-art{background:radial-gradient(ellipse at 77% 46%,rgba(215,164,105,.23),transparent 27%),linear-gradient(135deg,rgba(188,125,76,.09),transparent 50%)}
 .project-scene--web .project-scene-art{background:radial-gradient(ellipse at 77% 46%,rgba(90,196,178,.2),transparent 26%),linear-gradient(135deg,rgba(90,196,178,.08),transparent 50%)}
 .project-scene--design .project-scene-art{background:radial-gradient(ellipse at 77% 46%,rgba(211,141,166,.18),transparent 26%),linear-gradient(135deg,rgba(211,141,166,.08),transparent 50%)}
 .project-scene--ml .project-scene-art{background:radial-gradient(ellipse at 77% 46%,rgba(181,218,113,.18),transparent 26%),linear-gradient(135deg,rgba(181,218,113,.08),transparent 50%)}
 .project-scene--corner .project-scene-art{background:radial-gradient(ellipse at 77% 46%,rgba(214,176,112,.2),transparent 26%),linear-gradient(135deg,rgba(214,176,112,.08),transparent 50%)}
+
+/* The AI chapter turns documented RAG work into a quiet, readable system map. */
+.agent-chapter{height:220svh}
+.agent-stage{grid-template-columns:minmax(0,.86fr) minmax(0,1.14fr);column-gap:5vw}
+.agent-heading{position:relative;isolation:isolate;max-width:640px}
+.agent-heading::before{content:"";position:absolute;z-index:-1;inset:-1rem -1.2rem -.7rem;pointer-events:none;background:linear-gradient(90deg,rgba(10,12,16,.72),rgba(10,12,16,.5) 76%,transparent)}
+.agent-heading h2{margin:.7rem 0 1.1rem;font-size:clamp(3rem,6.4vw,6.8rem);line-height:.88;letter-spacing:-.055em}
+.agent-heading h2 em{font-family:var(--f-serif);font-weight:400;color:rgba(245,247,246,.72)}
+.agent-heading>p:not(.tag,.agent-tools){max-width:42ch;color:rgba(245,247,246,.67)}
+.agent-tools{display:flex;flex-wrap:wrap;gap:.5rem .9rem;margin-top:1.2rem;color:var(--ac);font:600 .56rem/1.4 var(--f-mono);letter-spacing:.09em}
+.agent-console{position:relative;isolation:isolate;display:grid;grid-template-rows:auto 1fr auto;gap:2rem;min-height:min(55svh,590px);padding:clamp(1.1rem,2.5vw,2.4rem);overflow:hidden;border:1px solid rgba(245,247,246,.16);background:linear-gradient(145deg,rgba(19,25,23,.97),rgba(11,15,14,.94));box-shadow:0 28px 90px rgba(0,0,0,.26)}
+.agent-console::before{content:"";position:absolute;z-index:-1;inset:0;pointer-events:none;opacity:.25;background:linear-gradient(rgba(245,247,246,.08) 1px,transparent 1px),linear-gradient(90deg,rgba(245,247,246,.08) 1px,transparent 1px);background-size:32px 32px;mask-image:linear-gradient(135deg,#000,transparent 88%)}
+.agent-console-top,.agent-console-bottom{display:flex;align-items:center;justify-content:space-between;gap:1rem;color:rgba(245,247,246,.48);font:600 .56rem/1.4 var(--f-mono);letter-spacing:.1em}
+.agent-console-top span:last-child{color:var(--ac)}
+.agent-flow{position:relative;display:flex;align-items:center;justify-content:space-between;gap:clamp(.35rem,1vw,1rem);padding:2.3rem 0}
+.agent-node{position:relative;z-index:1;display:grid;flex:1;gap:.65rem;min-width:0;padding:1rem 0;border-top:1px solid rgba(245,247,246,.22);border-bottom:1px solid rgba(245,247,246,.12)}
+.agent-node>span{color:rgba(245,247,246,.48);font:600 .51rem/1.3 var(--f-mono);letter-spacing:.08em}
+.agent-node>b{font-size:clamp(.9rem,1.35vw,1.3rem);font-weight:550;line-height:1.05;letter-spacing:-.04em}
+.agent-node>small{color:rgba(245,247,246,.55);font:500 .65rem/1.4 var(--f-mono)}
+.agent-node--core{border-color:rgba(216,243,107,.48)}
+.agent-node--core>span,.agent-node--core>small{color:var(--ac)}
+.agent-connector{position:relative;flex:0 1 46px;height:1px;background:rgba(245,247,246,.22);font-style:normal}
+.agent-connector>i{position:absolute;inset:-1px auto -1px 0;width:100%;background:var(--ac);transform:scaleX(0);transform-origin:left}
+.agent-console-bottom{justify-content:flex-start;flex-wrap:wrap;padding-top:1.3rem;border-top:1px solid rgba(245,247,246,.14)}
+.agent-console-bottom>span{display:flex;align-items:center;gap:.5rem;color:rgba(245,247,246,.5)}
+.agent-console-bottom>span i{width:6px;height:6px;border-radius:50%;background:var(--ac);box-shadow:0 0 14px rgba(216,243,107,.65)}
+.agent-console-bottom>b{color:rgba(245,247,246,.83);font:500 .75rem/1.4 var(--f-mono)}
+.agent-console-bottom em{color:var(--ac);font-style:normal}
+.agent-console-index{position:absolute;right:1.2rem;bottom:1.15rem;color:rgba(245,247,246,.27);font:600 .49rem/1 var(--f-mono);letter-spacing:.1em}
+body:not(.nm) .agent-connector>i{animation:agent-flow 2.4s cubic-bezier(.4,0,.2,1) infinite}
+body:not(.nm) .agent-connector:nth-of-type(2)>i{animation-delay:.8s}
+@keyframes agent-flow{0%,14%{transform:scaleX(0)}48%,68%{transform:scaleX(1)}100%{transform:scaleX(0);transform-origin:right}}
+body.nm .agent-connector>i{animation:none;transform:scaleX(1)}
 
 /* At Design, the full visual language shifts into a crafted computer workspace. */
 .design-chapter{height:250vh}
@@ -165,6 +200,13 @@ body::before{opacity:.11;background:radial-gradient(ellipse at 72% 48%,rgba(0,25
   .design-stage{grid-template-columns:minmax(0,1fr) minmax(0,.9fr);column-gap:3vw}
   .social-tile{padding:.8rem .65rem}
 }
+@media(max-width:900px){
+  .agent-stage{display:flex;flex-direction:column;align-items:stretch;justify-content:center;gap:1rem;padding-top:7vh;padding-bottom:2vh}
+  .agent-heading{width:100%;max-width:760px}
+  .agent-heading h2{font-size:clamp(2.7rem,6vw,4.2rem);line-height:.92;letter-spacing:-.04em}
+  .agent-heading>p:not(.tag,.agent-tools){max-width:60ch}
+  .agent-console{min-height:42svh}
+}
 @media(max-width:760px){
   .experience-chapter .stage::before,#projects .stage::before{content:"";position:absolute;z-index:0;top:0;right:0;left:0;height:46vh;pointer-events:none;background:linear-gradient(180deg,rgba(10,12,16,.99) 0%,rgba(10,12,16,.94) 69%,rgba(10,12,16,.7) 86%,transparent 100%)}
   #design .stage::before{content:"";position:absolute;z-index:0;top:0;right:0;left:0;height:32vh;pointer-events:none;background:linear-gradient(180deg,rgba(10,12,16,.98),rgba(10,12,16,.78) 78%,transparent)}
@@ -174,7 +216,7 @@ body::before{opacity:.11;background:radial-gradient(ellipse at 72% 48%,rgba(0,25
   #home .stage{padding-top:27vh}
   .education-chapter .stage{align-items:center}
   .education-chapter .txt{width:100%;max-height:78vh;overflow:auto;margin:0;padding:0!important}
-  .project-chapter{height:310vh}
+  .project-chapter{height:310svh}
   .project-heading{top:12vh;left:var(--pad-x);width:calc(100% - 2 * var(--pad-x))}
   .project-heading h2{font-size:clamp(3rem,12vw,5.1rem)}
   .project-heading>p:not(.tag){max-width:34ch;font-size:.86rem}
@@ -188,6 +230,28 @@ body::before{opacity:.11;background:radial-gradient(ellipse at 72% 48%,rgba(0,25
   .project-scene-meta{font-size:.53rem}
   .project-scene-copy{align-items:start;flex-direction:column;gap:.5rem}
   .project-scene-copy h3{font-size:1.35rem}.project-scene-copy>span{font-size:.7rem}
+  .agent-chapter{height:220svh}
+  .agent-stage{display:flex;flex-direction:column;align-items:stretch;justify-content:center;gap:1.1rem;padding-top:12vh;padding-bottom:4vh}
+  .agent-heading{max-width:none}
+  .agent-heading::before{inset:-.65rem -.45rem -.55rem;background:linear-gradient(90deg,rgba(10,12,16,.86),rgba(10,12,16,.7) 82%,transparent)}
+  .agent-heading h2{font-size:clamp(2.65rem,10vw,4rem);line-height:.94;letter-spacing:-.025em;margin:.45rem 0 .7rem}
+  .agent-heading>p:not(.tag,.agent-tools){font-size:.8rem;line-height:1.4}
+  .agent-tools{gap:.4rem .65rem;margin-top:.75rem;font-size:.48rem}
+  .agent-heading .text-link{font-size:.76rem;margin-top:.35rem}
+  .agent-console{gap:1rem;min-height:39svh;padding:1rem}
+  .agent-console-top,.agent-console-bottom{font-size:.47rem}
+  .agent-flow{display:grid;grid-template-columns:1fr;gap:0;padding:.15rem 0}
+  .agent-node{grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);align-items:center;gap:.15rem .55rem;padding:.5rem 0}
+  .agent-node>span{grid-column:1/-1;font-size:.43rem}
+  .agent-node>b{font-size:.83rem}
+  .agent-node>small{text-align:right;font-size:.52rem}
+  .agent-connector{width:1px;height:18px;margin:auto;flex:none}
+  .agent-connector>i{inset:0 -1px auto;width:3px;height:100%;transform:scaleY(0);transform-origin:top}
+  body:not(.nm) .agent-connector>i{animation-name:agent-flow-vertical}
+  @keyframes agent-flow-vertical{0%,14%{transform:scaleY(0)}48%,68%{transform:scaleY(1)}100%{transform:scaleY(0);transform-origin:bottom}}
+  .agent-console-bottom{padding-top:.75rem}
+  .agent-console-bottom>b{font-size:.61rem}
+  .agent-console-index{right:.8rem;bottom:.65rem;font-size:.4rem}
   .design-chapter{height:270vh}
   .design-stage{display:flex;flex-direction:column;align-items:stretch;justify-content:center;gap:1.2rem;padding-top:13vh;padding-bottom:6vh}
   .design-chapter .macbook-wrap{width:100%;max-width:none;padding-top:0;transform:scale(.98);transform-origin:center bottom}
@@ -222,6 +286,25 @@ body::before{opacity:.11;background:radial-gradient(ellipse at 72% 48%,rgba(0,25
 @media(prefers-reduced-motion:reduce){
   .office-agent{animation:none!important}
   .project-scene,.social-tile,.film-frame{transition:none!important}
+  .agent-connector>i{animation:none!important;transform:scaleX(1)}
 }
 body.nm .office-agent{animation:none!important}
 body.nm .project-scene,body.nm .social-tile,body.nm .film-frame{transition:none!important}
+
+/* Motion-off view keeps every project reachable in a native horizontal scroller. */
+@media(prefers-reduced-motion:reduce){
+  .project-chapter,body.nm .project-chapter{height:auto;min-height:100svh;overflow:visible}
+  .project-stage,body.nm .project-stage{position:relative;top:auto;height:auto;min-height:100svh;padding:calc(5rem + env(safe-area-inset-top)) var(--pad-x) 2rem}
+  .project-heading,body.nm .project-heading{position:relative;top:auto;left:auto;width:100%}
+  .project-progress,body.nm .project-progress{position:relative;inset:auto;display:flex;align-items:center;justify-content:space-between;margin-top:1.5rem;text-align:left}
+  .project-runway-window,body.nm .project-runway-window{position:relative;inset:auto;width:calc(100vw - 2 * var(--pad-x));height:min(58svh,620px);margin-top:1rem;overflow-x:auto;overflow-y:hidden;mask-image:none;overscroll-behavior-x:contain;scroll-snap-type:x mandatory}
+  .project-runway-track,body.nm .project-runway-track{height:100%;gap:1rem;transform:none!important}
+  .project-scene,body.nm .project-scene{flex:0 0 min(84vw,1320px);height:100%;scroll-snap-align:center;opacity:1!important;transform:none!important}
+}
+body.nm .project-chapter{height:auto;min-height:100svh;overflow:visible}
+body.nm .project-stage{position:relative;top:auto;height:auto;min-height:100svh;padding:calc(5rem + env(safe-area-inset-top)) var(--pad-x) 2rem}
+body.nm .project-heading{position:relative;top:auto;left:auto;width:100%}
+body.nm .project-progress{position:relative;inset:auto;display:flex;align-items:center;justify-content:space-between;margin-top:1.5rem;text-align:left}
+body.nm .project-runway-window{position:relative;inset:auto;width:calc(100vw - 2 * var(--pad-x));height:min(58svh,620px);margin-top:1rem;overflow-x:auto;overflow-y:hidden;mask-image:none;overscroll-behavior-x:contain;scroll-snap-type:x mandatory}
+body.nm .project-runway-track{height:100%;gap:1rem;transform:none!important}
+body.nm .project-scene{flex:0 0 min(84vw,1320px);height:100%;scroll-snap-align:center;opacity:1!important;transform:none!important}

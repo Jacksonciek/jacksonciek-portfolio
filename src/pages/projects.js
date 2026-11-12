@@ -1,7 +1,7 @@
 import projects from '../content/projects.json';
-import { node, link, pageHeader, section, badge } from './shared.js';
+import { node, link, pageHeader, section } from './shared.js';
 
-const valid = (value) => value && value !== 'TODO';
+const valid = (value) => Boolean(value);
 const tags = ['All', 'AI', 'Web', 'Mobile', 'Design', 'Video'];
 
 function projectCard(project) {
@@ -15,13 +15,12 @@ function projectCard(project) {
   const summary = node('span', 'project-card-summary', project.summary);
   const action = node('span', 'project-card-link', 'View project ↗');
   content.append(meta, title, summary, action); card.append(visual, content);
-  if (import.meta.env.DEV && project.placeholder) card.append(badge('Content to confirm'));
   return card;
 }
 
 function listPage(query) {
   const root = node('div', 'page-projects');
-  root.append(pageHeader('Selected work / 2022 — 2026', 'Projects', 'AI research, web products, mobile apps and product design. Each project opens with its role, tools and demo status.'));
+  root.append(pageHeader('Selected work', 'Projects', 'A selection of AI, web, mobile and design projects documented here.'));
   const currentTag = query.get('tag') || 'All', tool = query.get('tool');
   const filters = node('nav', 'filter-row'); filters.setAttribute('aria-label', 'Filter projects');
   tags.forEach((tag) => {
@@ -52,18 +51,19 @@ function detailPage(project) {
   intro.append(node('p', 'tag', `${project.tags.join(' / ')}${valid(project.year) ? ` · ${project.year}` : ''}`));
   const title = node('h1', '', project.title); title.id = 'page-title'; intro.append(title);
   intro.append(node('p', 'page-lede', project.summary));
-  if (import.meta.env.DEV && project.placeholder) intro.append(badge('Project details to confirm'));
   const body = node('div', 'project-detail-grid');
   const facts = section('Project details');
   const fields = [['Role', project.role], ['Year', project.year]];
   fields.forEach(([label, value]) => {
     if (valid(value)) { const row = node('p', 'detail-fact'); row.append(node('span', 'meta', label), node('strong', '', value)); facts.append(row); }
-    else if (import.meta.env.DEV) facts.append(node('p', 'meta', `${label}: TODO`));
   });
-  const stack = node('div', 'detail-stack'); stack.append(node('p', 'meta', 'Stack'));
-  project.stack.filter(valid).forEach((tool) => stack.append(link(tool, `/projects?tool=${encodeURIComponent(tool)}`, 'chip')));
-  if (import.meta.env.DEV && project.stack.some((value) => !valid(value))) stack.append(badge('Stack to confirm'));
-  facts.append(stack); body.append(facts);
+  const tools = project.stack.filter(valid);
+  if (tools.length) {
+    const stack = node('div', 'detail-stack'); stack.append(node('p', 'meta', 'Stack'));
+    tools.forEach((tool) => stack.append(link(tool, `/projects?tool=${encodeURIComponent(tool)}`, 'chip')));
+    facts.append(stack);
+  }
+  if (facts.children.length > 1) body.append(facts);
   const actions = node('div', 'detail-actions');
   if (project.demoMode === 'embedded') actions.append(link('Open live demo ↗', `/projects/${project.slug}/demo/`, 'btn btn--primary'));
   else if (project.demoMode === 'external' && valid(project.links?.demo)) { const a = link('Open live demo ↗', project.links.demo, 'btn btn--primary'); a.target = '_blank'; a.rel = 'noopener noreferrer'; a.removeAttribute('data-link'); actions.append(a); }

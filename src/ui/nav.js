@@ -7,7 +7,7 @@ const compact = matchMedia('(max-width: 900px)');
 // labeled list on compact screens so navigation never depends on hover.
 export function initNav() {
   const pill = document.getElementById('pill');
-  const chapters = CHAPTERS.map((c, i) => `<a href="#${c.id}" data-ch="${i}">${c.name}</a>`).join('');
+  const chapters = CHAPTERS.map((c) => `<a href="#${c.id}" data-ch="${c.id}">${c.name}</a>`).join('');
   pill.innerHTML = `<button class="pill-jl" type="button" aria-label="Jackson Lawrence, back to Home"><span class="pill-brand-mark" aria-hidden="true">JL</span><span class="pill-brand-name">Jackson Lawrence</span></button>
     <span class="pill-cur">Home</span>
     <div class="pill-links" id="pill-links">${chapters}</div>`;
@@ -42,7 +42,7 @@ export function initNav() {
     if (!anchor) return;
     event.preventDefault();
     setOpen(false);
-    scrollToChapter(+anchor.dataset.ch);
+    scrollToChapter(anchor.dataset.ch);
   };
 
   brand.addEventListener('click', () => (compact.matches ? setOpen(!open) : scrollToChapter(0)));
@@ -56,9 +56,11 @@ export function initNav() {
   });
   compact.addEventListener('change', () => { setOpen(false); syncBrand(); });
   document.addEventListener('jl:chapter', (event) => {
-    const i = event.detail.i;
-    cur.textContent = CHAPTERS[i].name;
-    links.forEach((anchor) => (+anchor.dataset.ch === i
+    const id = event.detail.id || CHAPTERS[event.detail.i]?.id;
+    const chapter = document.getElementById(id);
+    const navItem = CHAPTERS.find((item) => item.id === id);
+    cur.textContent = navItem?.name || chapter?.dataset.navLabel || 'Jackson Lawrence';
+    links.forEach((anchor) => (anchor.dataset.ch === id
       ? anchor.setAttribute('aria-current', 'true')
       : anchor.removeAttribute('aria-current')));
   });

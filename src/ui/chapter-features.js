@@ -1,6 +1,7 @@
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { motionOn } from '../core/motion.js';
+import { scrollToChapter } from '../core/scroll.js';
 import toolkit from '../content/toolkit.json';
 
 gsap.registerPlugin(ScrollTrigger);
@@ -9,6 +10,27 @@ const smooth = (a, b, x) => { const t = clamp01((x - a) / (b - a)); return t * t
 let ctx, gl;
 
 function prepareDecorativeContent() {
+  const railWindow = document.querySelector('[data-project-rail-window]');
+  const rail = railWindow?.querySelector('[data-project-rail]');
+  const projectInstruction = document.querySelector('[data-project-instruction]');
+  const syncProjectInstructions = () => {
+    if (projectInstruction) projectInstruction.textContent = motionOn() ? 'SCROLL TO MOVE THROUGH THE WORK' : 'SWIPE OR USE ARROW KEYS';
+    if (railWindow) railWindow.setAttribute('aria-label', motionOn()
+      ? 'Selected projects. Scroll vertically to move through the sequence.'
+      : 'Selected projects. Horizontal scroll area. Use left and right arrow keys to browse.');
+  };
+  syncProjectInstructions();
+  document.addEventListener('jl:motion', syncProjectInstructions);
+  if (railWindow && rail && !railWindow.dataset.focusSync) {
+    railWindow.dataset.focusSync = '1';
+    railWindow.addEventListener('focusin', (event) => {
+      const scene = event.target.closest('.project-scene');
+      if (!scene || !motionOn()) return;
+      const index = [...rail.children].indexOf(scene);
+      const progress = index / Math.max(1, rail.children.length - 1);
+      scrollToChapter('projects', progress);
+    });
+  }
   const track = document.querySelector('[data-film-track]');
   if (track && !track.children.length) {
     for (let i = 0; i < 12; i++) {
@@ -68,17 +90,52 @@ function experience(t) {
   if (progress) progress.style.transform = `scaleX(${clamp01(t)})`;
 }
 
+function revealElements(elements, t, start, finish) {
+  elements.forEach((element, i) => {
+    const offset = i * .018;
+    const enter = smooth(start + offset, finish + offset, t);
+    const leave = 1 - smooth(.88, 1, t);
+    const visible = Math.min(enter, leave);
+    element.style.opacity = String(visible);
+    element.style.transform = `translate3d(0,${(1 - visible) * 18}px,0)`;
+  });
+}
+
 function updateProjects(t) {
   const track = document.querySelector('[data-project-rail]');
   if (!track) return;
+  revealElements([...document.querySelector('.project-heading').children], t, .01, .18);
   const viewport = track.parentElement;
   const distance = Math.max(0, track.scrollWidth - viewport.clientWidth);
-  const travel = smooth(.28, .98, t);
-  track.style.transform = motionOn() ? `translate3d(${-travel * distance}px,0,0)` : '';
-  const count = track.children.length;
-  const index = Math.min(count, Math.max(1, Math.round(1 + travel * (count - 1))));
+  const travel = clamp01(t);
+  track.style.transform = `translate3d(${-travel * distance}px,0,0)`;
+  const scenes = [...track.children];
+  const width = viewport.clientWidth;
+  let closestIndex = 0, closestDistance = Infinity;
+  scenes.forEach((scene, i) => {
+    const center = scene.offsetLeft + scene.offsetWidth / 2 - travel * distance;
+    const offset = center - width / 2;
+    const distanceFromCenter = Math.abs(offset);
+    if (distanceFromCenter < closestDistance) { closestDistance = distanceFromCenter; closestIndex = i; }
+
+    // Cards ease into and out of the frame as the rail passes them. Only
+    // transform and opacity change while scrolling.
+    const enter = smooth(width * .78, width * .3, offset);
+    const leave = 1 - smooth(-width * .86, -width * 1.1, offset);
+    const reveal = Math.min(enter, leave);
+    scene.style.opacity = String(reveal);
+    scene.style.transform = `translate3d(0,${(1 - reveal) * 18}px,0) scale(${.97 + reveal * .03})`;
+  });
+  const count = scenes.length;
   const counter = document.querySelector('[data-rail-count]');
-  if (counter) counter.textContent = `${String(index).padStart(2, '0')} / ${String(count).padStart(2, '0')}`;
+  const label = `${String(closestIndex + 1).padStart(2, '0')} / ${String(count).padStart(2, '0')}`;
+  if (counter && counter.textContent !== label) counter.textContent = label;
+}
+
+function agents(t) {
+  const section = document.querySelector('#agents');
+  if (!section) return;
+  revealElements([...section.querySelector('.agent-heading').children, section.querySelector('.agent-console')], t, .01, .2);
 }
 
 function design(t) {
@@ -124,8 +181,20 @@ function resetStatic() {
   const macbook = document.querySelector('[data-macbook]');
   if (macbook) macbook.style.setProperty('--lid-open', motionOn() ? '0' : '1');
   if (macbook) macbook.style.setProperty('--screen-arrive', motionOn() ? '0' : '1');
-  const rail = document.querySelector('[data-project-rail]'); if (rail) rail.style.transform = '';
-  const railCount = document.querySelector('[data-rail-count]'); if (railCount) railCount.textContent = '01 / 06';
+  const rail = document.querySelector('[data-project-rail]');
+  if (rail) {
+    rail.style.transform = '';
+    [...rail.children].forEach((scene) => {
+      scene.style.removeProperty('opacity');
+      scene.style.removeProperty('transform');
+    });
+  }
+  const railCount = document.querySelector('[data-rail-count]');
+  if (railCount) railCount.textContent = `01 / ${String(rail?.children.length || 0).padStart(2, '0')}`;
+  document.querySelectorAll('.project-heading > *, #agents .agent-heading > *, #agents .agent-console').forEach((element) => {
+    element.style.removeProperty('opacity');
+    element.style.removeProperty('transform');
+  });
   document.querySelectorAll('.contact-mark span').forEach((letter, i) => {
     if (i !== 0 && i !== 8) { letter.style.maxWidth = '.72em'; letter.style.opacity = '1'; }
   });
@@ -143,6 +212,7 @@ function build() {
     });
     add('experience', experience);
     add('projects', updateProjects);
+    add('agents', agents);
     add('design', design);
     add('video', video);
     add('contact', contact);
