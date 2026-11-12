@@ -37,7 +37,8 @@ initRouter({ sheet });
 // Splash progress is real: fonts ready, window load and the GL scene, one third each.
 let fonts = 0, load = 0, glp = 0;
 const report = () => {
-  splash.setProgress((fonts + load + glp) / 3);
+  const label = !fonts ? 'Preparing type' : !load ? 'Loading page assets' : glp < 1 ? 'Building the particle scene' : 'Ready to enter';
+  splash.setProgress((fonts + load + glp) / 3, label);
   if (fonts && load && glp === 1) splash.finish();
 };
 document.fonts.ready.then(() => { fonts = 1; report(); });

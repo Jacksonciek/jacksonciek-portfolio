@@ -7,10 +7,6 @@ html.is-locked{overflow:hidden}
 @keyframes sp-failsafe{to{visibility:hidden}} /* if JS never runs, the page is not covered forever */
 #splash.sp-up{transform:translateY(-100%)}
 #splash.sp-fade{opacity:0}
-.sp-in{display:grid;justify-items:center;gap:.5rem}
-.sp-count{font:800 clamp(5rem,18vw,12rem)/1 var(--f-sans);letter-spacing:-.04em;font-variant-numeric:tabular-nums;color:var(--ac)}
-.sp-label{min-height:1.4em;font:600 var(--fs-label)/1.4 var(--f-mono);text-transform:uppercase;letter-spacing:var(--ls-label)}
-.sp-skip{position:absolute;right:var(--pad-x);bottom:max(2rem,env(safe-area-inset-bottom))}
 
 /* nav pill. The shell (position, glass) is in components.css.
    Desktop: chapter links stay visible. Compact layouts use a labeled menu. */
