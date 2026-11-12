@@ -1,5 +1,3 @@
-import { gl } from './scene.js';
-
 // Background and accent follow the scroll. Each chapter has a color group (data-g on its section, tokens in
 // tokens.css); (i, j, e) from jl:chapter blends the current group into the next one. Runs even without WebGL.
 const root = document.documentElement;
@@ -15,7 +13,6 @@ function paint({ i, j, e }) {
   last = bg + ac;
   root.style.setProperty('--bg', bg);
   root.style.setProperty('--ac', ac);
-  gl.setColor(ac);
 }
 
 export function initPalette() {

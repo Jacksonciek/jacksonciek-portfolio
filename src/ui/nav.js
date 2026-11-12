@@ -1,63 +1,73 @@
-import { CHAPTERS, PAGES } from '../content/site.js';
+import { CHAPTERS } from '../content/site.js';
 import { scrollToChapter, lock, unlock } from '../core/scroll.js';
-import { openQuick } from './quick.js';
 
-const phone = matchMedia('(max-width: 760px)');
+const compact = matchMedia('(max-width: 900px)');
 
-// Desktop: the pill is always open, every link is visible, nothing depends on hover.
-// Phone: the pill is JL + current chapter + Quick mode, and JL opens the full-screen menu.
+// Keep the chapter list visible on wide screens; the brand opens the same
+// labeled list on compact screens so navigation never depends on hover.
 export function initNav() {
   const pill = document.getElementById('pill');
-  const chapters = CHAPTERS.map((c, i) => `<a href="#${c.id}" data-ch="${i}">${c.name}</a>`).join('');
-  const pages = PAGES.filter((p) => p.nav).map((p) => `<a data-link href="${p.path}">${p.name}</a>`).join('');
-  pill.innerHTML = `<button class="pill-jl" type="button">JL</button>
+  const chapters = CHAPTERS.map((c) => `<a href="#${c.id}" data-ch="${c.id}">${c.name}</a>`).join('');
+  pill.innerHTML = `<button class="pill-jl" type="button" aria-label="Jackson Lawrence, back to Home"><span class="pill-brand-mark" aria-hidden="true">JL</span><span class="pill-brand-name">Jackson Lawrence</span></button>
     <span class="pill-cur">Home</span>
-    <div class="pill-links" id="pill-links">${chapters}<span class="pill-sep" aria-hidden="true"></span>${pages}</div>
-    <button class="pill-q" type="button">Quick mode</button>`;
-  const menu = document.createElement('div'); // phone menu, placed right after the pill so Tab order stays natural
+    <div class="pill-links" id="pill-links">${chapters}</div>`;
+  const menu = document.createElement('div');
   menu.id = 'menu';
   menu.className = 'menu';
-  menu.innerHTML = `<nav aria-label="Menu">${chapters}${pages}</nav>`;
+  menu.innerHTML = `<nav aria-label="Menu">${chapters}</nav>`;
   pill.after(menu);
 
-  const jl = pill.querySelector('.pill-jl'), cur = pill.querySelector('.pill-cur');
+  const brand = pill.querySelector('.pill-jl'), cur = pill.querySelector('.pill-cur');
   const links = [...pill.querySelectorAll('a[data-ch]')];
   let open = false, locked = false;
-  const setOpen = (v) => { // only the phone menu opens and closes
-    open = v && phone.matches;
-    jl.setAttribute('aria-expanded', String(open));
+  const setOpen = (value) => {
+    open = value && compact.matches;
+    brand.setAttribute('aria-expanded', String(open));
     menu.classList.toggle('on', open);
     if (open !== locked) { locked = open; (open ? lock : unlock)(); }
   };
-  const syncJl = () => { // same button, two jobs: menu on phones, back to Home on desktop
-    if (phone.matches) {
-      jl.setAttribute('aria-label', 'JL menu');
-      jl.setAttribute('aria-controls', 'menu');
-      jl.setAttribute('aria-expanded', String(open));
+  const syncBrand = () => {
+    if (compact.matches) {
+      brand.setAttribute('aria-label', 'Jackson Lawrence, open navigation');
+      brand.setAttribute('aria-controls', 'menu');
+      brand.setAttribute('aria-expanded', String(open));
     } else {
-      jl.setAttribute('aria-label', 'Jackson Lawrence, back to Home');
-      jl.removeAttribute('aria-controls');
-      jl.removeAttribute('aria-expanded');
+      brand.setAttribute('aria-label', 'Jackson Lawrence, back to Home');
+      brand.removeAttribute('aria-controls');
+      brand.removeAttribute('aria-expanded');
     }
   };
-  const onLink = (e) => {
-    const a = e.target.closest('a');
-    if (!a) return;
+  const onLink = (event) => {
+    const anchor = event.target.closest('a[data-ch]');
+    if (!anchor) return;
+    event.preventDefault();
     setOpen(false);
-    if (a.dataset.ch) { e.preventDefault(); scrollToChapter(+a.dataset.ch); }
+    scrollToChapter(anchor.dataset.ch);
   };
-  jl.addEventListener('click', () => (phone.matches ? setOpen(!open) : scrollToChapter(0)));
+
+  brand.addEventListener('click', () => (compact.matches ? setOpen(!open) : scrollToChapter(0)));
   pill.addEventListener('click', onLink);
   menu.addEventListener('click', onLink);
-  pill.querySelector('.pill-q').addEventListener('click', (e) => { setOpen(false); openQuick(e.currentTarget); });
-  document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && open) { setOpen(false); jl.focus(); } });
-  document.addEventListener('pointerdown', (e) => { if (open && !pill.contains(e.target) && !menu.contains(e.target)) setOpen(false); });
-  phone.addEventListener('change', () => { setOpen(false); syncJl(); });
-  document.addEventListener('jl:chapter', (e) => {
-    const i = e.detail.i;
-    cur.textContent = CHAPTERS[i].name; // phone label
-    links.forEach((a) => (+a.dataset.ch === i ? a.setAttribute('aria-current', 'true') : a.removeAttribute('aria-current'))); // desktop highlight
+  document.querySelectorAll('a[data-chapter-jump]').forEach((anchor) => anchor.addEventListener('click', (event) => {
+    event.preventDefault();
+    scrollToChapter(anchor.dataset.chapterJump);
+  }));
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape' && open) { setOpen(false); brand.focus(); }
   });
-  syncJl();
+  document.addEventListener('pointerdown', (event) => {
+    if (open && !pill.contains(event.target) && !menu.contains(event.target)) setOpen(false);
+  });
+  compact.addEventListener('change', () => { setOpen(false); syncBrand(); });
+  document.addEventListener('jl:chapter', (event) => {
+    const id = event.detail.id || CHAPTERS[event.detail.i]?.id;
+    const chapter = document.getElementById(id);
+    const navItem = CHAPTERS.find((item) => item.id === id);
+    cur.textContent = navItem?.name || chapter?.dataset.navLabel || 'Jackson Lawrence';
+    links.forEach((anchor) => (anchor.dataset.ch === id
+      ? anchor.setAttribute('aria-current', 'true')
+      : anchor.removeAttribute('aria-current')));
+  });
+  syncBrand();
   pill.hidden = false;
 }

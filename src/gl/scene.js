@@ -2,17 +2,18 @@ import { WebGLRenderer, PerspectiveCamera, Scene, Group, Points, BufferGeometry,
 import { gsap } from 'gsap';
 import { COUNTS } from '../config.js';
 import { motionOn } from '../core/motion.js';
-import { buildTargets, SIDES } from './shapes.js';
+import { getCurrentChapter } from '../ui/chapters.js';
+import { buildTargets, loadPortraitPool, SIDES } from './shapes.js';
 import { makeMaterial } from './shaders.js';
 import { createInteraction } from './interaction.js';
 
 const phoneMQ = matchMedia('(max-width:760px)'); // same breakpoint as the CSS layout
 const TAN = Math.tan((45 / 2) * (Math.PI / 180)); // half of the 45deg field of view
-const DEN = [1, 0.55, 0.55, 0.55, 0.55, 0.55, 1]; // glyph density per chapter: heavy glyphs on the plain figure
+const DEN = [1, 1, 0.55, 0.55, 0.55, 0.55, 0.55, 0.55, 0.55, 0.55, 0.55]; // dense avatar; lighter helix field
 const lerp = (a, b, t) => a + (b - a) * t;
 let canvas, renderer, camera, scene, group, points, geo, u, ptr;
 let T = [], pair = '', count = 0;
-let side = 1, phone = false, motion = true, baseZ = 5, offX = 1.9, intro = null;
+let side = 1, phone = false, motion = true, baseZ = 5, cameraPush = 0, offX = 1.9, intro = null;
 let chap = { i: 0, j: 0, e: 0 }; // last jl:chapter, kept so the scene can start from any scroll position
 let resolveReady;
 const ready = new Promise((r) => { resolveReady = r; }); // resolves true, or false when WebGL is unavailable
@@ -23,31 +24,35 @@ function layout() {
   renderer.setPixelRatio(Math.min(devicePixelRatio, phone ? 1.5 : 2));
   renderer.setSize(canvas.clientWidth, canvas.clientHeight, false); // CSS owns the canvas size
   camera.aspect = canvas.clientWidth / canvas.clientHeight;
-  camera.position.z = baseZ = camera.aspect < 1 ? 6.4 : 5;
+  baseZ = camera.aspect < 1 ? 6.4 : 5;
+  camera.position.z = baseZ * (1 - cameraPush * 0.34);
   camera.updateProjectionMatrix();
   u.uPR.value = renderer.getPixelRatio();
-  u.uAspect.value = camera.aspect;
   const halfW = TAN * baseZ * camera.aspect; // half of the visible width at the figure's depth
-  offX = Math.min(1.9, halfW * 0.55, halfW * 0.97 - 0.95); // 0.95 = shoulder half-width: never clipped by the right edge
+  offX = Math.min(2.1, halfW * 0.55, halfW * 0.97 - 1.15); // preserve a wider margin around the larger shoulders
   place();
 }
 
 function place() {
-  group.position.set(phone ? 0 : side * offX, phone ? 0.9 : -0.3, 0); // desktop y -0.3 centers the figure and keeps the mortarboard (y 1.78) below the top edge
-  group.scale.setScalar(phone ? 0.72 : 1);
+  group.position.set(phone ? 0 : side * offX, phone ? 1.35 : -0.3, 0); // leave a clean text lane under the head on phones
+  const width = canvas.clientWidth;
+  const scale = phone ? 0.9 : width < 820 ? 0.76 : width < 980 ? 0.86 : width < 1120 ? 1 : 1.18;
+  group.scale.setScalar(scale);
+}
+
+function updateAvatarAttributes() {
+  if (!geo) return;
+  geo.setAttribute('aHead', new BufferAttribute(T.headMask || new Float32Array(count), 1));
+  geo.setAttribute('aGold', new BufferAttribute(T.portraitGold || new Float32Array(count), 1));
 }
 
 function frame(_, dt) {
   if (document.hidden) return; // paused while the tab is hidden
+  if (!document.getElementById('pg')?.hidden || !document.getElementById('viewer')?.hidden) return;
   const s = Math.min(dt, 50) / 1000;
-  const g = ptr.update(s, motion); // writes the pointer uniforms and returns the gaze
-  if (motion) u.uTime.value += s * (1 - 0.7 * u.uHover.value); // frozen time = no drift, no sparkle; hover slows it
-  // The figure turns toward the text and leans toward the pointer (gaze). Motion off: no turn.
-  const k = 1 - Math.exp(-3.7 * s);
-  if (motion) {
-    group.rotation.y += (-side * 0.35 + g.x * 0.3 - group.rotation.y) * k;
-    group.rotation.x += (g.y * 0.15 - group.rotation.x) * k;
-  } else group.rotation.set(0, 0, 0);
+  const g = ptr.update(s, motion);
+  if (motion) u.uTime.value += s;
+  u.uLook.value.set(g.x, g.y);
   renderer.render(scene, camera);
 }
 
@@ -65,19 +70,23 @@ function apply() {
   gl.setMix(e);
   gl.setDensity(lerp(DEN[i], DEN[j], e));
   gl.setSide(lerp(SIDES[i], SIDES[j], e));
-  u.uDis.value = !motion ? 0 : i === 0 || i === 5 ? 2.6 : 1; // only Home to Education and Video to Contact dissolve fully
+  u.uHead.value = lerp(i < 2 ? 1 : 0, j < 2 ? 1 : 0, e);
+  // Points travel directly between targets; the small spread adds air without a dissolve or camera pullback.
+  u.uDis.value = motion ? 0.22 : 0;
 }
 document.addEventListener('jl:chapter', (ev) => { chap = ev.detail; apply(); }); // registered at import time: no event is missed
+document.addEventListener('jl:chapter', () => gl.setColor(getComputedStyle(document.documentElement).getPropertyValue('--ac')));
 
 // Phones pull the objects toward the centered figure so they never clip. Same point count, new positions.
 function rebuild() {
   T = buildTargets(count, phoneMQ.matches ? 0.55 : 1);
+  updateAvatarAttributes();
   pair = ''; // forces the next setTargets to upload
 }
 
 export const gl = {
   ready,
-  // Uploads targets A = T[i] and B = T[j] only when the pair changes. T holds one target per chapter (0..6).
+  // Uploads targets A = T[i] and B = T[j] only when the pair changes. T follows the page's chapter order.
   setTargets(i, j) {
     if (!geo || pair === `${i}|${j}`) return;
     pair = `${i}|${j}`;
@@ -87,9 +96,11 @@ export const gl = {
   },
   setMix(e) { if (u) u.uMix.value = e; },
   setDensity(v) { if (u) u.uDen.value = v; },
-  setSpin(v) { if (u) u.uSp.value = v; },
-  setHover(on) { ptr?.setHover(on); }, // eases uHover 0 to 1; also wired to every [data-disperse] element
   setSide(s) { side = s; if (group) place(); }, // -1 left, +1 right; fractions are fine
+  setCameraPush(progress) {
+    cameraPush = Math.max(0, Math.min(1, progress));
+    if (camera) camera.position.z = baseZ * (1 - cameraPush * 0.34);
+  },
   setColor(hex) { // 6-digit hex like '#cdbfff'
     const n = parseInt(hex.trim().slice(1), 16);
     if (u) u.uC.value.set(((n >> 16) & 255) / 255, ((n >> 8) & 255) / 255, (n & 255) / 255);
@@ -115,12 +126,15 @@ export async function initGL(onProgress = () => {}) {
     onProgress(0.3);
 
     count = phone ? COUNTS.mobile : COUNTS.desktop; // fixed at start; a resize does not change the count
+    await loadPortraitPool();
     T = buildTargets(count, phone ? 0.55 : 1);
+    chap = { ...getCurrentChapter() }; // jl:chapter may have fired before this deferred GL module loaded
     const rnd = new Float32Array(count).map(Math.random);
     geo = new BufferGeometry();
     geo.setAttribute('position', new BufferAttribute(T[0].slice(), 3));
     geo.setAttribute('aB', new BufferAttribute(T[0].slice(), 3));
     geo.setAttribute('aR', new BufferAttribute(rnd, 1));
+    updateAvatarAttributes();
     points = new Points(geo, material);
     points.frustumCulled = false; // the shader moves the points far outside the original bounds
     group.add(points);
@@ -134,7 +148,7 @@ export async function initGL(onProgress = () => {}) {
     window.addEventListener('resize', () => { layout(); renderer.render(scene, camera); });
     phoneMQ.addEventListener('change', () => { rebuild(); apply(); });
     document.addEventListener('jl:motion', (e) => { motion = e.detail; if (!motion) intro?.progress(1); apply(); });
-    ptr = createInteraction(u);
+    ptr = createInteraction();
     gsap.ticker.add(frame);
     onProgress(1);
     resolveReady(true);

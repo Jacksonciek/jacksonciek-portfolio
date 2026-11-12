@@ -1,5 +1,6 @@
 *,*::before,*::after{box-sizing:border-box}
-html{-webkit-text-size-adjust:100%}
+html{-webkit-text-size-adjust:100%;-webkit-tap-highlight-color:transparent}
+button,a,[role="button"]{touch-action:manipulation}
 body{margin:0;min-height:100dvh;background:var(--bg);color:var(--tx);font:400 var(--fs-body)/1.6 var(--f-sans);overflow-x:clip;-webkit-font-smoothing:antialiased}
 h1,h2,h3,p,ul{margin:0}
 ul{padding:0;list-style:none}
@@ -25,7 +26,7 @@ a:where(:not(.btn,.skip)){
   background:
     linear-gradient(currentColor,currentColor) 0 100%/0 1px no-repeat,
     linear-gradient(color-mix(in srgb,currentColor 40%,transparent),color-mix(in srgb,currentColor 40%,transparent)) 0 100%/100% 1px no-repeat;
-  transition:background-size var(--d-hover) var(--ease-out);
+  transition:none;
 }
 @media (hover:hover) and (pointer:fine){
   a:where(:not(.btn,.skip)):hover{background-size:100% 1px,100% 1px}

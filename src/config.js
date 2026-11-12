@@ -1,6 +1,6 @@
 export const FLAGS = { TILT: true, SHELF_AUTOPLAY: true, HERO_VIDEO: true };
 export const HERO_VIDEO_URL = '';
-export const COUNTS = { desktop: 6000, mobile: 2500 };
+export const COUNTS = { desktop: 26000, mobile: 9000 };
 export const EASE = {
   out: 'cubic-bezier(.23,1,.32,1)',
   inOut: 'cubic-bezier(.77,0,.175,1)',

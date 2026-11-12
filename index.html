@@ -1,15 +1,18 @@
 <!doctype html>
-<html lang="en" style="background:#2c3250">
+<html lang="en" style="background:#0a0c10">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
   <title>Jackson Lawrence | Creative technologist</title>
   <meta name="description" content="Jackson Lawrence is a creative technologist, an AI engineer and designer. Computer Science graduate, 4.00 CGPA, open to roles.">
-  <meta name="theme-color" content="#3a4160">
+  <meta name="robots" content="index,follow,max-image-preview:large">
+  <meta name="theme-color" content="#0a0c10">
   <meta property="og:type" content="website">
   <meta property="og:title" content="Jackson Lawrence | Creative technologist">
   <meta property="og:description" content="AI engineer &times; designer. I build the model and design the product around it.">
   <meta property="og:image" content="/share.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Jackson Lawrence | Creative technologist">
   <meta name="twitter:description" content="AI engineer &times; designer. I build the model and design the product around it.">
@@ -17,19 +20,25 @@
   <link rel="icon" href="/favicon.svg" type="image/svg+xml">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;600;800&family=Instrument+Serif:ital@1&display=swap">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@1&display=swap">
+  <script type="application/ld+json">
+    {"@context":"https://schema.org","@type":"Person","name":"Jackson Lawrence","jobTitle":"Creative technologist","email":"jacksonciek@gmail.com","address":{"@type":"PostalAddress","addressLocality":"Kota Tangerang","addressRegion":"Banten","addressCountry":"ID"},"sameAs":["https://www.linkedin.com/in/jackson-lawrence-ciek/"]}
+  </script>
 </head>
 <body>
   <a class="skip" href="#main">Skip to content</a>
+  <div id="hero-video" aria-hidden="true"><video muted loop playsinline preload="none"></video></div>
   <canvas id="gl" aria-hidden="true"></canvas>
+  <img id="gl-fallback" src="/media/3d-avatar-fallback.png" alt="" aria-hidden="true">
   <div id="splash" role="status" aria-label="Loading"></div>
   <nav id="pill" class="pill" aria-label="Main" hidden></nav>
+  <svg class="svg-defs" aria-hidden="true" focusable="false"><filter id="liquid-displacement" x="-30%" y="-30%" width="160%" height="160%"><feTurbulence type="fractalNoise" baseFrequency=".035" numOctaves="2" seed="4" result="surface"/><feDisplacementMap in="SourceGraphic" in2="surface" scale="5" xChannelSelector="R" yChannelSelector="G"/></filter></svg>
 
   <main id="main" tabindex="-1">
     <section id="home" class="ch L" data-g="id" aria-labelledby="t-home">
       <div class="stage"><div class="txt">
         <p class="badge fx"><i class="dot" aria-hidden="true"></i>Open to roles<span class="sep" aria-hidden="true">&middot;</span><span class="clock" data-clock>Jakarta</span></p>
-        <h1 id="t-home" class="rv">Jackson Lawrence, <em>creative technologist</em></h1>
+        <h1 id="t-home" class="hero-title" aria-label="Jackson Lawrence, creative technologist"><span class="hero-line" aria-hidden="true"><span class="hero-line-in">Jackson Lawrence,</span></span><span class="hero-line" aria-hidden="true"><span class="hero-line-in"><em>creative technologist</em></span></span></h1>
         <p class="sub fx">AI engineer &times; designer</p>
         <p class="fx">Computer Science graduate, 4.00 CGPA, full scholarship. I build the model and design the product around it.</p>
         <div class="btns fx">
@@ -45,11 +54,12 @@
       </div></div>
     </section>
 
-    <section id="education" class="ch R" data-g="id" aria-labelledby="t-education">
+    <section id="education" class="ch R education-chapter" data-g="id" aria-labelledby="t-education">
       <div class="stage"><div class="txt">
         <p class="tag fx">02 / Education</p>
         <h2 id="t-education" class="rv">Four years, one 4.00.</h2>
         <p class="fx">Computer Science at Universitas Multimedia Nusantara, 2022 to 2026, on a full merit scholarship. Next: MBA in Project Management at GBS Malta, Oct 2026 to Oct 2027.</p>
+        <p class="fx education-degree"><span class="degree-seal" aria-hidden="true">UMN</span><span><b>Computer Science</b><br>Universitas Multimedia Nusantara · Aug 2022 — Aug 2026</span></p>
         <p class="fx"><b class="ct" data-to="4" data-dec="2">4.00</b> CGPA in all eight semesters.</p>
         <p class="fx">Thesis: hate speech span identification in Indonesian-English code-mixed text, using multi-task learning with BLOOM-560M.</p>
         <p class="fx">Lab assistant for four courses: <b class="ct" data-to="200" data-suffix="+">200+</b> students, satisfaction 93.71 to 98.85 out of 100.</p>
@@ -57,75 +67,214 @@
       </div></div>
     </section>
 
-    <section id="experience" class="ch L" data-g="eng" aria-labelledby="t-experience">
-      <div class="stage"><div class="txt">
-        <p class="tag fx">03 / Experience</p>
-        <h2 id="t-experience" class="rv">The AI, and the plumbing around it.</h2>
-        <div class="steps fx">
-          <article class="step">
-            <h3>AI Engineer Intern, AI.DECE</h3>
-            <p class="meta">Feb 2025 to Feb 2026</p>
-            <p>LLM and RAG work for document processing, semantic search, automated reporting and data visualization.</p>
-            <ul class="chips"><li class="chip">LangChain</li><li class="chip">ChromaDB</li><li class="chip">Weaviate</li><li class="chip">Next.js</li><li class="chip">Docker</li></ul>
+    <section id="experience" class="ch experience-chapter" data-g="eng" aria-labelledby="t-experience">
+      <div class="stage experience-stage">
+        <header class="experience-heading">
+          <p class="tag">03 / Experience</p>
+          <h2 id="t-experience">Code, campaigns &amp; frames.</h2>
+          <p class="experience-instruction">Scroll to move through the roles.</p>
+        </header>
+        <div class="experience-progress" aria-hidden="true"><span data-role-progress></span></div>
+        <p class="experience-count meta" data-role-count data-current="0" aria-live="polite" aria-atomic="true">01 / 07</p>
+        <div class="experience-deck" data-experience-deck aria-label="Experience roles">
+          <article class="experience-card experience-card--engineer" data-experience-card>
+            <header class="experience-card-top"><span class="experience-wordmark">AI.DECE</span><span class="experience-index">01</span></header>
+            <div class="experience-card-content"><p class="experience-date">Feb 2025 — Feb 2026</p><h3>AI Engineer <em>Intern</em></h3><p class="experience-detail">LLM and RAG for document processing, semantic search, automated reporting, and data visualization.</p><ul class="chips" aria-label="Tools"><li class="chip">LangChain</li><li class="chip">ChromaDB</li><li class="chip">Weaviate</li><li class="chip">Next.js</li><li class="chip">Docker</li></ul></div>
           </article>
-          <article class="step">
-            <h3>R&amp;D Intern, PT Quantum Infra Solusindo</h3>
-            <p class="meta">Feb to Apr 2025</p>
-            <p>Asynchronous message queue and a real-time monitoring dashboard for hospital-oriented systems.</p>
-            <ul class="chips"><li class="chip">RabbitMQ</li><li class="chip">Next.js</li></ul>
+          <article class="experience-card experience-card--engineer" data-experience-card>
+            <header class="experience-card-top"><span class="experience-wordmark">PT Quantum Infra Solusindo</span><span class="experience-index">02</span></header>
+            <div class="experience-card-content"><p class="experience-date">Feb 2025 — Apr 2025</p><h3>R&amp;D <em>Intern</em></h3><p class="experience-detail">Asynchronous message queue with RabbitMQ and a real-time monitoring dashboard with Next.js for hospital-oriented systems.</p><ul class="chips" aria-label="Tools"><li class="chip">RabbitMQ</li><li class="chip">Next.js</li></ul></div>
+          </article>
+          <article class="experience-card experience-card--creative" data-experience-card>
+            <header class="experience-card-top"><span class="experience-wordmark">Bangsar Heights Pavilion Sdn Bhd</span><span class="experience-index">03</span></header>
+            <div class="experience-card-content"><p class="experience-date">Nov 2024 — Feb 2026 · Remote · Malaysia</p><h3>Digital Marketing <em>Consultant</em></h3><p class="experience-detail">Brochures, banners, flyers, booth and Instagram design, Instagram and Facebook ads, and visual branding.</p><p class="experience-proof"><b>200,000+</b><span>campaign views</span></p></div>
+          </article>
+          <article class="experience-card experience-card--engineer" data-experience-card>
+            <header class="experience-card-top"><span class="experience-wordmark">UMN ECO · Infinite UMN</span><span class="experience-index">04</span></header>
+            <div class="experience-card-content"><p class="experience-date">2024</p><h3>Web <em>Developer</em></h3><ul class="chips" aria-label="Tools"><li class="chip">React</li><li class="chip">Laravel</li></ul></div>
+          </article>
+          <article class="experience-card experience-card--community" data-experience-card>
+            <header class="experience-card-top"><span class="experience-wordmark">PPIF</span><span class="experience-index">05</span></header>
+            <div class="experience-card-content"><p class="experience-date">2024</p><h3>Person <em>in Charge</em></h3></div>
+          </article>
+          <article class="experience-card experience-card--community" data-experience-card>
+            <header class="experience-card-top"><span class="experience-wordmark">Campus Visit</span><span class="experience-index">06</span></header>
+            <div class="experience-card-content"><p class="experience-date">2023</p><h3>MC, PIC &amp; <em>Marketing</em></h3></div>
+          </article>
+          <article class="experience-card experience-card--creative" data-experience-card>
+            <header class="experience-card-top"><span class="experience-wordmark">Video</span><span class="experience-index">07</span></header>
+            <div class="experience-card-content"><p class="experience-date">Video editing · Cinematography · Photography</p><h3>Video <em>Editor</em></h3><ul class="chips" aria-label="Tools"><li class="chip">Premiere Pro</li><li class="chip">After Effects</li></ul></div>
           </article>
         </div>
-        <p class="fx sm">Also: Web Developer for UMN ECO 2024 and Infinite UMN 2024 (React + Laravel), PIC of PPIF 2024.</p>
-        <p class="fx"><span data-toolkit-summary>19 tools across 5 disciplines</span> &middot; <a data-link href="/about#toolkit">See full toolkit</a></p>
-      </div></div>
+        <p class="experience-toolkit"><span data-toolkit-summary></span> · <a href="#toolkit" data-chapter-jump="toolkit">See full toolkit</a></p>
+      </div>
     </section>
 
-    <section id="projects" class="ch R" data-g="eng" aria-labelledby="t-projects">
-      <div class="stage"><div class="txt">
-        <p class="tag fx">04 / Projects</p>
-        <h2 id="t-projects" class="rv">One project, running live.</h2>
-        <p class="fx">Mobile, machine learning, web and UI/UX work, from a food waste app to hate speech detection.</p>
-        <div class="slot fx" data-placeholder>Featured project: TODO</div>
-        <div class="btns fx"><a class="btn btn--secondary" data-link href="/projects">All projects</a></div>
-      </div></div>
+    <section id="projects" class="ch project-chapter" data-g="eng" aria-labelledby="t-projects">
+      <div class="stage project-stage">
+        <header class="project-heading">
+          <p class="tag">04 / Selected work</p>
+          <h2 id="t-projects">Ideas that made it<br><em>into the world.</em></h2>
+          <p>A thesis, a food-waste app, a classifier and a handful of digital experiences.</p>
+          <a class="text-link" data-link href="/projects">Explore the full project archive <span aria-hidden="true">↗</span></a>
+        </header>
+        <p class="project-progress meta" aria-live="polite"><span data-rail-count>01 / 06</span><span data-project-instruction>SCROLL TO MOVE THROUGH THE WORK</span></p>
+        <div class="project-runway-window" data-project-rail-window role="region" tabindex="0" aria-label="Selected projects. Scroll vertically to move through the sequence.">
+          <div class="project-runway-track" data-project-rail>
+            <a class="project-scene project-scene--ai" data-link href="/projects/multilingual-hate-speech-detection"><span class="project-scene-meta">01 / AI · THESIS</span><span class="project-scene-art" aria-hidden="true"><i>INDONESIAN · ENGLISH</i><b>Code-mixed<br>text<span>.</span></b><em>BLOOM-560M · MULTI-TASK LEARNING</em></span><span class="project-scene-copy"><h3>Multilingual hate speech detection</h3><span>Thesis · span identification <i>↗</i></span></span></a>
+            <a class="project-scene project-scene--mobile" data-link href="/projects/ecofoods"><span class="project-scene-meta">02 / MOBILE · FOOD WASTE</span><span class="project-scene-art" aria-hidden="true"><i>ANDROID APP</i><b>Food<br>waste<span>.</span></b><em>ECOFOODS</em></span><span class="project-scene-copy"><h3>EcoFoods</h3><span>Android app against food waste <i>↗</i></span></span></a>
+            <a class="project-scene project-scene--web" data-link href="/projects/ascents"><span class="project-scene-meta">03 / WEB · POKÉMON API</span><span class="project-scene-art" aria-hidden="true"><i>ASCENTS</i><b>Pokémon<br>API<span>.</span></b><em>ANIMATION · RESPONSIVE LAYOUT</em></span><span class="project-scene-copy"><h3>Ascents</h3><span>Website using the Pokémon API <i>↗</i></span></span></a>
+            <a class="project-scene project-scene--design" data-link href="/projects/wastyecycle"><span class="project-scene-meta">04 / DESIGN · FIGMA</span><span class="project-scene-art" aria-hidden="true"><i>UI / UX CONCEPT</i><b>Zero food<br>waste<span>.</span></b><em>WASTYECYCLE</em></span><span class="project-scene-copy"><h3>WastyeCycle</h3><span>Figma UI/UX concept for a zero food-waste app <i>↗</i></span></span></a>
+            <a class="project-scene project-scene--ml" data-link href="/projects/banana-leaf-disease-classifier"><span class="project-scene-meta">05 / AI · COMPUTER VISION</span><span class="project-scene-art" aria-hidden="true"><i>PYTHON · CNN</i><b>Banana leaf<br>disease<span>.</span></b><em>IMAGE CLASSIFICATION</em></span><span class="project-scene-copy"><h3>Banana leaf disease classifier</h3><span>CNN built with Python <i>↗</i></span></span></a>
+            <a class="project-scene project-scene--corner" data-link href="/projects/gayale-corner"><span class="project-scene-meta">06 / WEB · SMALL BUSINESS</span><span class="project-scene-art" aria-hidden="true"><i>MSME WEBSITE</i><b>Gayale<br>Corner<span>.</span></b><em>WEB DEVELOPMENT</em></span><span class="project-scene-copy"><h3>Gayale Corner</h3><span>Website for an MSME <i>↗</i></span></span></a>
+          </div>
+        </div>
+      </div>
     </section>
 
-    <section id="design" class="ch L" data-g="cre" aria-labelledby="t-design">
-      <div class="stage"><div class="txt">
-        <p class="tag fx">05 / Design</p>
-        <h2 id="t-design" class="rv">Campaigns people actually watched.</h2>
-        <p class="fx">Digital Marketing Consultant at Bangsar Heights Pavilion (Nov 2024 to Feb 2026): brochures, banners, flyers, booths, Instagram and Facebook ads, and brand visuals.</p>
-        <p class="fx"><b class="ct" data-to="200000" data-suffix="+">200,000+</b> campaign views</p>
-        <div class="slot fx" id="shelf-slot" data-placeholder>Design shelf: works.json placeholders</div>
-        <p class="hint fx">Press or hold a work to see every version.</p>
-      </div></div>
+    <section id="agents" class="ch agent-chapter" data-g="eng" data-nav-label="AI Agents" aria-labelledby="t-agents">
+      <div class="stage agent-stage">
+        <header class="agent-heading">
+          <p class="tag">05 / AI systems</p>
+          <h2 id="t-agents">AI agents need<br><em>ground to stand on.</em></h2>
+          <p>LLM and RAG workflows for document processing, semantic search, automated reports and data visualization.</p>
+          <p class="agent-tools"><span>LANGCHAIN</span><span>CHROMADB</span><span>WEAVIATE</span><span>NEXT.JS</span><span>DOCKER</span></p>
+          <a class="text-link" data-link href="/projects/multilingual-hate-speech-detection">Explore the multilingual NLP thesis <span aria-hidden="true">↗</span></a>
+        </header>
+        <div class="agent-console" role="group" aria-label="AI engineering workflow">
+          <div class="agent-console-top"><span>AI ENGINEERING / AI.DECE</span><span>FOCUS AREAS / SYSTEM MAP</span></div>
+          <div class="agent-flow" role="group" aria-label="AI engineering focus areas: document processing, semantic search, automated reporting and data visualization">
+            <div class="agent-node"><span>01 / DOCUMENTS</span><b>Processing</b><small>LLM + RAG</small></div>
+            <i class="agent-connector" aria-hidden="true"><i></i></i>
+            <div class="agent-node agent-node--core"><span>02 / SEARCH</span><b>Semantic search</b><small>LangChain</small></div>
+            <i class="agent-connector" aria-hidden="true"><i></i></i>
+            <div class="agent-node"><span>03 / OUTPUTS</span><b>Automated reports</b><small>Data visualization</small></div>
+          </div>
+          <div class="agent-console-bottom"><span><i aria-hidden="true"></i> SYSTEM COMPONENTS</span><b>LangChain <em>·</em> ChromaDB <em>·</em> Weaviate</b></div>
+          <span class="agent-console-index" aria-hidden="true">JL / 05</span>
+        </div>
+      </div>
+    </section>
+
+    <section id="transition-copy" class="ch transition-copy-chapter" data-g="cre" data-nav-label="Graphic Design" aria-labelledby="t-transition-copy">
+      <div class="stage transition-copy-stage">
+        <h2 id="t-transition-copy">Built with logic.<br><em>Shaped to be felt.</em></h2>
+      </div>
+    </section>
+
+    <section id="macbook-transition" class="ch macbook-transition-chapter" data-g="cre" data-nav-label="Graphic Design" aria-label="Scroll through the MacBook transition into Graphic Design">
+      <div class="stage macbook-transition-stage">
+        <div class="macbook-wrap transition-macbook" data-macbook role="img" aria-label="A MacBook opening onto campaign artwork that was not supplied">
+          <div class="macbook-lid" data-macbook-lid>
+            <div class="macbook-screen">
+              <div class="macbook-toolbar"><span class="macbook-brand">JL</span><span class="macbook-dots" aria-hidden="true"><i></i><i></i><i></i></span><span>GRAPHIC DESIGN / STUDIO</span></div>
+              <div class="macbook-display design-display transition-display">
+                <div class="macbook-screen-title"><span>ARTWORK PREVIEW</span><span>BANGSAR HEIGHTS PAVILION</span></div>
+                <div class="design-desktop">
+                  <div class="design-desktop-rail"><span>BRAND</span><span>01</span><span>02</span><span>03</span><i></i></div>
+                  <div class="design-board"><span class="design-board-kicker">SELECTED CAMPAIGN WORK</span><b>Artwork<br><em>not supplied.</em></b><span class="design-board-orbit" aria-hidden="true"></span><span class="design-board-footer">SOURCE ARTWORK FILE REQUIRED</span></div>
+                  <aside class="design-board-notes"><span>ASSET STATUS</span><b>Preview unavailable</b><span>Digital · Print · Social</span></aside>
+                </div>
+                <div class="macbook-screen-footer"><span>BANGSAR HEIGHTS PAVILION · MALAYSIA</span><span>ARTWORK NOT SUPPLIED</span></div>
+              </div>
+            </div>
+          </div>
+          <div class="macbook-base" aria-hidden="true"><span></span></div>
+          <p class="macbook-caption"><span>SCROLL TO OPEN THE STUDIO</span><span>GRAPHIC DESIGN</span></p>
+        </div>
+      </div>
+    </section>
+
+    <section id="design" class="ch design-chapter" data-g="cre" aria-labelledby="t-design">
+      <div class="stage design-stage">
+        <div class="design-copy">
+          <p class="tag">06 / Design studio</p>
+          <h2 id="t-design">Campaigns people actually watched.</h2>
+          <p>Digital Marketing Consultant at Bangsar Heights Pavilion Sdn Bhd (Malaysia, remote; Nov 2024 to Feb 2026): brochures, banners, flyers, booths, Instagram and Facebook ads, and brand visuals.</p>
+          <p class="design-proof"><b class="ct" data-to="200000" data-suffix="+">200,000+</b><span>campaign views</span></p>
+          <p class="asset-note">The supplied materials include no campaign artwork files. Missing previews are marked on the shelf.</p>
+          <div class="shelf-mount" id="shelf-slot" role="group" aria-label="Selected design work; artwork previews not supplied"></div>
+          <p class="hint">Select a work to see its artwork status.</p>
+        </div>
+      </div>
     </section>
 
     <section id="video" class="ch R" data-g="cre" aria-labelledby="t-video">
       <div class="stage"><div class="txt">
-        <p class="tag fx">06 / Video</p>
+        <p class="tag fx">07 / Video</p>
         <h2 id="t-video" class="rv">Frames, cuts, colour.</h2>
         <p class="fx">Video editing, cinematography and photography. Tools: Premiere Pro and After Effects.</p>
-        <div class="slot fx" data-placeholder>Filmstrip: TODO</div>
+        <div class="film" role="img" aria-label="Decorative filmstrip; source video footage is not supplied"><div class="film-hud"><span>REC <b data-timecode>00:00:00</b></span><span>CAM 01</span></div><span class="film-status">FOOTAGE NOT SUPPLIED</span><div class="trk" data-film-track aria-hidden="true"></div></div>
+        <p class="asset-note fx">The supplied materials include no video or still footage.</p>
         <div class="btns fx"><a class="btn btn--secondary" data-link href="/video">Open video page</a></div>
       </div></div>
     </section>
 
-    <section id="contact" class="ch L" data-g="id" aria-labelledby="t-contact">
+    <section id="toolkit" class="ch toolkit-chapter toolkit-section" data-g="id" aria-labelledby="t-toolkit">
+      <div class="stage toolkit-stage">
+        <header class="toolkit-intro">
+          <p class="tag">08 / Toolkit</p>
+          <h2 id="t-toolkit">Tools for both<br><em>sides of the work.</em></h2>
+          <p class="toolkit-summary"><b class="ct" data-toolkit-count data-to="0">0</b><span> tools</span><i aria-hidden="true">·</i><b class="ct" data-toolkit-disciplines data-to="0">0</b><span> disciplines</span></p>
+          <p class="toolkit-lede">Engineering and creative tools behind the work.</p>
+        </header>
+        <ul class="toolkit-groups" data-toolkit-groups aria-label="Tools by discipline"></ul>
+      </div>
+    </section>
+
+    <section id="contact" class="ch L contact-chapter" data-g="id" aria-labelledby="t-contact">
       <div class="stage"><div class="txt">
-        <p class="tag fx">07 / Contact</p>
+        <p class="tag fx">09 / Contact</p>
         <h2 id="t-contact" class="rv">Let's build something.</h2>
+        <p class="contact-mark" aria-label="Jackson Lawrence"><span aria-hidden="true"></span></p>
         <p class="fx">Open to Software Engineering, Data and AI, Web Development, Digital Marketing and Design roles.</p>
         <div class="btns fx">
           <a class="btn btn--primary" data-disperse href="mailto:jacksonciek@gmail.com">Email</a>
-          <a class="btn btn--secondary" data-disperse href="https://www.linkedin.com/in/jacksonlawrence-ciek" target="_blank" rel="noopener noreferrer">LinkedIn</a>
+          <a class="btn btn--secondary" data-disperse href="https://www.linkedin.com/in/jackson-lawrence-ciek/" target="_blank" rel="noopener noreferrer">LinkedIn</a>
           <a class="btn btn--secondary" data-disperse href="/cv/Jackson-Lawrence-CV.pdf" download>Download CV</a>
         </div>
+        <div class="tool-marquee" aria-hidden="true"></div>
       </div></div>
     </section>
   </main>
 
   <footer class="foot">
+    <section class="ai-office" aria-labelledby="office-title">
+      <div class="office-intro">
+        <p class="tag">A small AI office / a visual simulation</p>
+        <h2 id="office-title">Good work moves<br><em>together.</em></h2>
+        <p>A tiny world for the agents, tools and ideas behind the work. The office is a concept image; the team here is simulated.</p>
+      </div>
+      <figure class="office-scene">
+        <img src="/media/ai-office.jpeg" alt="A stylized AI office with colorful team rooms arranged around a shared central brain" loading="lazy">
+        <span class="office-grid" aria-hidden="true"></span>
+        <span class="office-agent office-agent--one" aria-hidden="true"><i>R</i></span>
+        <span class="office-agent office-agent--two" aria-hidden="true"><i>D</i></span>
+        <span class="office-agent office-agent--three" aria-hidden="true"><i>C</i></span>
+        <span class="office-agent office-agent--four" aria-hidden="true"><i>A</i></span>
+        <div class="office-stations" role="group" aria-label="Contact stations">
+          <a class="office-station office-station--linkedin" href="https://www.linkedin.com/in/jackson-lawrence-ciek/" target="_blank" rel="noopener noreferrer" aria-label="Open Jackson Lawrence's LinkedIn profile in a new tab" data-office-message="LinkedIn · Opens in a new tab"><span class="office-station-mark" aria-hidden="true">in</span><span>LinkedIn</span></a>
+          <button class="office-station office-station--instagram" type="button" aria-label="Instagram profile link not listed" data-office-message="Instagram · Profile link not listed"><span class="office-station-mark" aria-hidden="true">◎</span><span>Instagram</span></button>
+          <button class="office-station office-station--whatsapp" type="button" aria-label="WhatsApp number not listed" data-office-message="WhatsApp · Number not listed"><span class="office-station-mark" aria-hidden="true">◉</span><span>WhatsApp</span></button>
+          <a class="office-station office-station--email" href="mailto:jacksonciek@gmail.com" aria-label="Email Jackson Lawrence" data-office-message="Email · Opens your mail app"><span class="office-station-mark" aria-hidden="true">@</span><span>Email</span></a>
+          <a class="office-station office-station--github" href="https://github.com/Jacksonciek" target="_blank" rel="noopener noreferrer" aria-label="Open Jackson Lawrence's GitHub profile in a new tab" data-office-message="GitHub · Opens in a new tab"><span class="office-station-mark" aria-hidden="true"><svg viewBox="0 0 19 19"><use href="/icons.svg#github-icon"></use></svg></span><span>GitHub</span></a>
+          <a class="office-station office-station--cv" href="/cv/Jackson-Lawrence-CV.pdf" download aria-label="Download Jackson Lawrence's CV" data-office-message="CV · Downloads the PDF"><span class="office-station-mark" aria-hidden="true">CV</span><span>Download CV</span></a>
+        </div>
+        <span class="office-station-status" data-office-status aria-live="polite">Select a station. Contact links are also listed below.</span>
+        <figcaption><span>THE SHARED STUDIO</span><span>4 AGENTS · 1 GOAL</span></figcaption>
+      </figure>
+    </section>
+    <section class="foot-connect" aria-label="Contact Jackson">
+      <div class="foot-connect-copy"><span class="meta">Let’s keep in touch</span><h2>Find your way in.</h2><a href="mailto:jacksonciek@gmail.com">jacksonciek@gmail.com ↗</a></div>
+      <div class="social-grid">
+        <a class="social-tile social-tile--linkedin" href="https://www.linkedin.com/in/jackson-lawrence-ciek/" target="_blank" rel="noopener noreferrer"><span class="social-mark">in</span><span><b>LinkedIn</b><small>Professional profile</small></span><i>↗</i></a>
+        <a class="social-tile social-tile--github" href="https://github.com/Jacksonciek" target="_blank" rel="noopener noreferrer"><span class="social-mark"><svg viewBox="0 0 19 19" aria-hidden="true"><use href="/icons.svg#github-icon"></use></svg></span><span><b>GitHub</b><small>Code & experiments</small></span><i>↗</i></a>
+        <div class="social-tile social-tile--instagram" aria-disabled="true"><span class="social-mark">◎</span><span><b>Instagram</b><small>Profile link to add</small></span><i>＋</i></div>
+        <div class="social-tile social-tile--whatsapp" aria-disabled="true"><span class="social-mark">◉</span><span><b>WhatsApp</b><small>Number not listed</small></span><i>＋</i></div>
+        <a class="social-tile social-tile--cv" href="/cv/Jackson-Lawrence-CV.pdf" download><span class="social-mark">CV</span><span><b>Download CV</b><small>PDF résumé</small></span><i>↓</i></a>
+      </div>
+    </section>
+    <div class="foot-lower">
     <nav aria-label="Pages"><ul>
       <li><a data-link href="/ai-lab">AI lab</a></li>
       <li><a data-link href="/projects">Projects</a></li>
@@ -135,9 +284,10 @@
       <li><a data-link href="/contact">Contact</a></li>
     </ul></nav>
     <button id="motion-toggle" class="btn btn--secondary" type="button" aria-pressed="true">Motion: on</button>
+    <p class="foot-copyright">© 2026 Jackson Lawrence · Made with curiosity in Tangerang.</p>
+    </div>
   </footer>
 
-  <div id="quick" hidden></div>
   <div id="pg" hidden></div>
   <div id="viewer" role="dialog" aria-modal="true" aria-label="Work viewer" hidden></div>
   <script type="module" src="/src/main.js"></script>
