@@ -89,7 +89,7 @@ export function makeMaterial() {
     blending: AdditiveBlending,
     uniforms: {
       uMix: { value: 0 }, uIn: { value: 0 }, uPR: { value: 1 }, uC: { value: new Vector3(1, 1, 1) },
-      uAccent: { value: new Vector3(0.92, 0.75, 0.28) },
+      uAccent: { value: new Vector3(0.35, 1, 0.63) },
       uDen: { value: 1 }, uDis: { value: 1 }, uHead: { value: 1 },
       uTime: { value: 0 }, uA: { value: makeAtlas() }, uLook: { value: new Vector2() },
     },

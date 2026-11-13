@@ -1,12 +1,12 @@
 <!doctype html>
-<html lang="en" style="background:#0a0c10">
+<html lang="en" style="background:#090a0f">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
   <title>Jackson Lawrence | Creative technologist</title>
   <meta name="description" content="Jackson Lawrence is a creative technologist, an AI engineer and designer. Computer Science graduate, 4.00 CGPA, open to roles.">
   <meta name="robots" content="index,follow,max-image-preview:large">
-  <meta name="theme-color" content="#0a0c10">
+  <meta name="theme-color" content="#090a0f">
   <meta property="og:type" content="website">
   <meta property="og:title" content="Jackson Lawrence | Creative technologist">
   <meta property="og:description" content="AI engineer &times; designer. I build the model and design the product around it.">
@@ -28,10 +28,17 @@
 <body>
   <a class="skip" href="#main">Skip to content</a>
   <div id="hero-video" aria-hidden="true"><video muted loop playsinline preload="none"></video></div>
+  <div id="theme-field" aria-hidden="true"><div class="theme-green"></div><div class="theme-white"></div><div class="theme-lines"></div><div class="theme-final-white"></div></div>
   <canvas id="gl" aria-hidden="true"></canvas>
   <img id="gl-fallback" src="/media/3d-avatar-fallback.png" alt="" aria-hidden="true">
   <div id="splash" role="status" aria-label="Loading"></div>
-  <nav id="pill" class="pill" aria-label="Main" hidden></nav>
+  <div class="nav-shell" id="nav-shell" hidden>
+    <nav id="pill" class="pill" aria-label="Main"></nav>
+    <div id="nav-panel" class="nav-panel" hidden>
+      <div class="nav-panel-list" aria-label="Site sections"></div>
+      <div class="nav-panel-frame" aria-hidden="true"><span></span></div>
+    </div>
+  </div>
   <svg class="svg-defs" aria-hidden="true" focusable="false"><filter id="liquid-displacement" x="-30%" y="-30%" width="160%" height="160%"><feTurbulence type="fractalNoise" baseFrequency=".035" numOctaves="2" seed="4" result="surface"/><feDisplacementMap in="SourceGraphic" in2="surface" scale="5" xChannelSelector="R" yChannelSelector="G"/></filter></svg>
 
   <main id="main" tabindex="-1">
@@ -106,7 +113,7 @@
             <div class="experience-card-content"><p class="experience-date">Video editing · Cinematography · Photography</p><h3>Video <em>Editor</em></h3><ul class="chips" aria-label="Tools"><li class="chip">Premiere Pro</li><li class="chip">After Effects</li></ul></div>
           </article>
         </div>
-        <p class="experience-toolkit"><span data-toolkit-summary></span> · <a href="#toolkit" data-chapter-jump="toolkit">See full toolkit</a></p>
+        <p class="experience-toolkit"><span data-toolkit-summary></span> · <a href="#toolkit" data-chapter-jump="toolkit">See all skills</a></p>
       </div>
     </section>
 
@@ -210,11 +217,11 @@
       </div></div>
     </section>
 
-    <section id="toolkit" class="ch toolkit-chapter toolkit-section" data-g="id" aria-labelledby="t-toolkit">
+    <section id="toolkit" class="ch toolkit-chapter toolkit-section" data-g="id" aria-labelledby="t-skills">
       <div class="stage toolkit-stage">
         <header class="toolkit-intro">
-          <p class="tag">08 / Toolkit</p>
-          <h2 id="t-toolkit">Tools for both<br><em>sides of the work.</em></h2>
+          <p class="tag">08 / Skills</p>
+          <h2 id="t-skills">Tools for both<br><em>sides of the work.</em></h2>
           <p class="toolkit-summary"><b class="ct" data-toolkit-count data-to="0">0</b><span> tools</span><i aria-hidden="true">·</i><b class="ct" data-toolkit-disciplines data-to="0">0</b><span> disciplines</span></p>
           <p class="toolkit-lede">Engineering and creative tools behind the work.</p>
         </header>
@@ -283,7 +290,6 @@
       <li><a data-link href="/about">About</a></li>
       <li><a data-link href="/contact">Contact</a></li>
     </ul></nav>
-    <button id="motion-toggle" class="btn btn--secondary" type="button" aria-pressed="true">Motion: on</button>
     <p class="foot-copyright">© 2026 Jackson Lawrence · Made with curiosity in Tangerang.</p>
     </div>
   </footer>

@@ -1,13 +1,18 @@
+import { MOTION_TOKENS } from '../config.js';
+
 let overlay;
 
 function bloom(x, y) {
-  const drop = document.createElement('i');
-  drop.className = 'liquid-drop';
-  drop.setAttribute('aria-hidden', 'true');
-  drop.style.setProperty('--liquid-x', `${x}px`);
-  drop.style.setProperty('--liquid-y', `${y}px`);
-  overlay.append(drop);
-  drop.addEventListener('animationend', () => drop.remove(), { once: true });
+  const ring = document.createElement('i');
+  ring.className = 'click-ring';
+  ring.style.setProperty('--click-duration', String(MOTION_TOKENS.click.duration) + 's');
+  ring.setAttribute('aria-hidden', 'true');
+  ring.style.left = `${x}px`;
+  ring.style.top = `${y}px`;
+  ring.style.width = `${MOTION_TOKENS.click.diameter}px`;
+  ring.style.height = `${MOTION_TOKENS.click.diameter}px`;
+  overlay.append(ring);
+  ring.addEventListener('animationend', () => ring.remove(), { once: true });
 }
 
 export function initLiquid() {

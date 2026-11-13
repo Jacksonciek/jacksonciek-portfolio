@@ -1,15 +1,15 @@
 # Revision progress
-- Current step: R1 Foundation. R0 intake and code audit complete; no feature edits yet.
-- R0 inventory: concept.md; images/about_me.png, ai-office.png, avatar-3d.png, navbar.png, toolkit.png; videos/avatar.mp4, background.mp4 (13.278s), click.mp4 (4.796s), experience.mp4 (9.203s), footer.mp4 (14.469s), graphic_design.mp4 (10.990s), macbook.mp4 (9.736s), navbar.mp4 (11.377s), projects.mp4 (38.644s), video.mp4 (9.161s); no frames directory.
-- Filename mapping: ai-office.png serves as kantor-ai.png; avatar-3d.png is the avatar reference. Missing: graduation-toga reference and isi_toolkit.png. R0 did not analyze visual content.
-- Splash/Home: splash and particle portrait exist; hero content, CTA, face clarity and pointer repulsion need revision. Splash hand-off unverified.
-- Welcome/Education/About Me: Welcome beat is missing; Education exists with a procedural toga but wrong layout/motion; About Me overlay and hero button are missing.
-- Experience: seven roles exist, but cards stack vertically, lack click targets/logos, and are not the required horizontal pinned scene.
-- Projects: six project cards exist with horizontal rail and route links; must become vertical staged showcase, centered particle formation, selected subset, and View more.
-- Transition/MacBook: transition copy and CSS MacBook exist; laptop is not three.js, Apple mark/keyboard are absent, and scroll sequence is incomplete.
-- Graphic Design/Video Editing: design shelf and filmstrip exist but use generic placeholders; no per-item staged scenes or View more affordances.
-- Wordmark/Skills: current contact mark says Jackson Lawrence; Toolkit data/layout exists, but must become JACKSONCIEK and Technical Skills from the missing reference transcription.
-- Footer/Contact: old text-heavy footer embeds an office image; contact destinations Instagram/WhatsApp/CV are missing, and stations are not rendered as the required code-built office.
-- Navbar/Global effects: current bar includes brand label, omits required items/panels/About Me, and has no adaptive glass theme; click effect exists but is not yet compared.
-- Removed items still present: AI Systems section, motion toggle, extra routed pages, old footer copy and obsolete navigation links.
-- R9/README: README exists but is stale; no current browser, viewport, FPS, reduced-preference, fallback, contrast or link verification has been run.
+- Current step: R2 Avatar. R0 intake/audit and R1 Foundation are complete.
+- R0 inventory: concept.md; images about_me.png, ai-office.png, avatar-3d.png, navbar.png, toolkit.png; videos avatar 14.442s, background 13.278s, click 4.796s, experience 9.203s, footer 14.469s, graphic_design 10.990s, macbook 9.736s, navbar 11.377s, projects 38.644s, video 9.161s; no extracted-frames folder.
+- Reference mapping: ai-office.png is kantor-ai.png; avatar-3d.png is avatar; missing graduation-toga reference and isi_toolkit.png.
+- R0 audit: substantial changes remain for Welcome/Education/About Me, horizontal Experience, vertical Projects, laptop, staged design/video, wordmark/Skills, office footer and single-page routing.
+- R1 references: Apple captured with Playwright; tibdigital.com timed out. Notes and sampled reference captures are in docs/reference-notes and ignored .ref-cache.
+- R1 foundation: layered black/green/pale theme API, adaptive glass nav panel with ordered links and empty frame, reduced-motion preference handling, 56px click ring, no toggle, Toolkit label changed to Skills.
+- R1 verification: Vite build passes; Playwright checked 1440, 1024, 768 and 390 layouts, nav hover/focus/touch/Escape, theme endpoints and a clean console.
+- R1 limits: Edge reports prefers-reduced-transparency unsupported; final background progress is an API for R3 to connect. Vite warns about the existing 539 kB WebGL chunk.
+- R1 skills: apple-design, animation-performance; UI Pro Max glassmorphism, GSAP hover and scroll-reveal queries.
+- R2 next: inspect only avatar.mp4, document legibility/morph/cursor findings, then implement face and pointer behavior.
+- R3: welcome, education, toga overlay, About Me panel and splash hand-off; toga reference is missing.
+- R4/R5: horizontal Experience; Projects intro, raised vertical showcase and View more, with particle lifecycle.
+- R6/R7: MacBook transition, staged design/video, JACKSONCIEK mark and Technical Skills; skills image/content reference is missing.
+- R8/R9: six-station AI office footer, responsive/accessibility/performance polish, README and final reference/browser verification.

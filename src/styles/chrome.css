@@ -8,27 +8,6 @@ html.is-locked{overflow:hidden}
 #splash.sp-up{transform:translateY(-100%)}
 #splash.sp-fade{opacity:0}
 
-/* nav pill. The shell (position, glass) is in components.css.
-   Desktop: chapter links stay visible. Compact layouts use a labeled menu. */
-.pill{display:flex;align-items:center;gap:2px;padding:4px;max-width:calc(100vw - env(safe-area-inset-left) - env(safe-area-inset-right) - 1.5rem)}
-.pill-jl,.pill-links a{display:inline-flex;align-items:center;min-height:44px;padding:0 .62rem;border:0;border-radius:var(--r-pill);background:none;color:var(--tx);font:600 .81rem/1 var(--f-sans);white-space:nowrap;text-decoration:none;cursor:pointer;transition:transform var(--d-press) var(--ease-out)}
-.pill-jl{padding:0 .9rem;font-weight:700}
-.pill-brand-mark{display:none}
-.pill-brand-name{letter-spacing:-.025em}
-.pill-cur{display:none;padding:0 .8rem;color:var(--ac);font:600 var(--fs-label)/1 var(--f-mono);text-transform:uppercase;letter-spacing:var(--ls-label);white-space:nowrap}
-.pill-links{display:flex;align-items:center}
-.pill-links a[aria-current]{background:rgba(0,255,133,.1);color:var(--ac)}
-.pill-links a:focus-visible{outline-offset:-4px}
-.pill-jl:active,.pill-links a:active{transform:scale(.97)}
-@media (hover:hover) and (pointer:fine){.pill-jl:hover,.pill-links a:hover{background:rgba(233,236,235,.1)}}
-@media (max-width:900px){.pill-brand-name{display:none}.pill-brand-mark{display:inline}.pill-links{display:none}.pill-cur{display:block}}
-
-/* phone menu: a sibling of the pill, because the pill's backdrop-filter would trap a fixed child */
-.menu{position:fixed;inset:0;z-index:28;overflow-y:auto;padding:calc(5.5rem + env(safe-area-inset-top)) var(--pad-x) calc(2rem + env(safe-area-inset-bottom));background:color-mix(in srgb,var(--splash) 82%,transparent);-webkit-backdrop-filter:blur(24px);backdrop-filter:blur(24px);opacity:0;visibility:hidden;transform:translateY(-12px);transition:opacity var(--d-ui) var(--ease-out),transform var(--d-ui) var(--ease-out),visibility 0s linear var(--d-ui)}
-.menu.on{opacity:1;visibility:visible;transform:none;transition:opacity var(--d-panel) var(--ease-drawer),transform var(--d-panel) var(--ease-drawer),visibility 0s}
-.menu a{display:flex;align-items:center;min-height:56px;border-bottom:1px solid var(--glass-line);background:none;color:var(--tx);font:600 19px/1 var(--f-sans)}
-@media (min-width:901px){.menu{display:none}}
-
 /* headline words: .w is the clipped mask, .wi is the part that moves */
 .w{display:inline-block;clip-path:inset(-.08em -.12em -.2em -.12em)}
 .wi{display:inline-block}

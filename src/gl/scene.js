@@ -76,6 +76,10 @@ function apply() {
 }
 document.addEventListener('jl:chapter', (ev) => { chap = ev.detail; apply(); }); // registered at import time: no event is missed
 document.addEventListener('jl:chapter', () => gl.setColor(getComputedStyle(document.documentElement).getPropertyValue('--ac')));
+document.addEventListener('jl:theme', (event) => {
+  gl.setColor(event.detail.particle);
+  gl.setAccent(event.detail.accent);
+});
 
 // Phones pull the objects toward the centered figure so they never clip. Same point count, new positions.
 function rebuild() {
@@ -104,6 +108,10 @@ export const gl = {
   setColor(hex) { // 6-digit hex like '#cdbfff'
     const n = parseInt(hex.trim().slice(1), 16);
     if (u) u.uC.value.set(((n >> 16) & 255) / 255, ((n >> 8) & 255) / 255, (n & 255) / 255);
+  },
+  setAccent(hex) {
+    const n = parseInt(hex.trim().slice(1), 16);
+    if (u) u.uAccent.value.set(((n >> 16) & 255) / 255, ((n >> 8) & 255) / 255, (n & 255) / 255);
   },
 };
 
@@ -141,7 +149,9 @@ export async function initGL(onProgress = () => {}) {
     onProgress(0.6);
 
     layout();
-    gl.setColor(getComputedStyle(document.documentElement).getPropertyValue('--ac'));
+    const lightTheme = document.documentElement.dataset.theme === 'light';
+    gl.setColor(lightTheme ? '#147E41' : '#18C75F');
+    gl.setAccent(lightTheme ? '#090A0F' : '#59FFA0');
     apply(); // start at the current scroll position (the page may load scrolled)
     await renderer.compileAsync(scene, camera);
     points.visible = false; // stays hidden until the splash is gone, then the intro flies it in
