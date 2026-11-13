@@ -1,0 +1,15 @@
+# Revision progress
+- Current step: R1 Foundation. R0 intake and code audit complete; no feature edits yet.
+- R0 inventory: concept.md; images/about_me.png, ai-office.png, avatar-3d.png, navbar.png, toolkit.png; videos/avatar.mp4, background.mp4 (13.278s), click.mp4 (4.796s), experience.mp4 (9.203s), footer.mp4 (14.469s), graphic_design.mp4 (10.990s), macbook.mp4 (9.736s), navbar.mp4 (11.377s), projects.mp4 (38.644s), video.mp4 (9.161s); no frames directory.
+- Filename mapping: ai-office.png serves as kantor-ai.png; avatar-3d.png is the avatar reference. Missing: graduation-toga reference and isi_toolkit.png. R0 did not analyze visual content.
+- Splash/Home: splash and particle portrait exist; hero content, CTA, face clarity and pointer repulsion need revision. Splash hand-off unverified.
+- Welcome/Education/About Me: Welcome beat is missing; Education exists with a procedural toga but wrong layout/motion; About Me overlay and hero button are missing.
+- Experience: seven roles exist, but cards stack vertically, lack click targets/logos, and are not the required horizontal pinned scene.
+- Projects: six project cards exist with horizontal rail and route links; must become vertical staged showcase, centered particle formation, selected subset, and View more.
+- Transition/MacBook: transition copy and CSS MacBook exist; laptop is not three.js, Apple mark/keyboard are absent, and scroll sequence is incomplete.
+- Graphic Design/Video Editing: design shelf and filmstrip exist but use generic placeholders; no per-item staged scenes or View more affordances.
+- Wordmark/Skills: current contact mark says Jackson Lawrence; Toolkit data/layout exists, but must become JACKSONCIEK and Technical Skills from the missing reference transcription.
+- Footer/Contact: old text-heavy footer embeds an office image; contact destinations Instagram/WhatsApp/CV are missing, and stations are not rendered as the required code-built office.
+- Navbar/Global effects: current bar includes brand label, omits required items/panels/About Me, and has no adaptive glass theme; click effect exists but is not yet compared.
+- Removed items still present: AI Systems section, motion toggle, extra routed pages, old footer copy and obsolete navigation links.
+- R9/README: README exists but is stale; no current browser, viewport, FPS, reduced-preference, fallback, contrast or link verification has been run.
