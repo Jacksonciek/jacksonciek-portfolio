@@ -7,7 +7,7 @@ import { buildTargets, loadPortraitPool, SIDES } from './shapes.js';
 import { makeMaterial } from './shaders.js';
 import { createInteraction } from './interaction.js';
 
-const phoneMQ = matchMedia('(max-width:760px)'); // same breakpoint as the CSS layout
+const phoneMQ = matchMedia('(max-width:820px)'); // portrait tablets use the same upper-avatar composition as phones
 const TAN = Math.tan((45 / 2) * (Math.PI / 180)); // half of the 45deg field of view
 const DEN = [1, 1, 0.55, 0.55, 0.55, 0.55, 0.55, 0.55, 0.55, 0.55, 0.55]; // dense avatar; lighter helix field
 const lerp = (a, b, t) => a + (b - a) * t;
@@ -35,15 +35,17 @@ function layout() {
 }
 
 function place() {
-  group.position.set(phone ? 0 : side * offX, phone ? 1.35 : -0.3, 0); // leave a clean text lane under the head on phones
+  const compactAvatar = phone && (chap.id === 'home' || chap.id === 'education' || welcomeActive());
+  group.position.set(phone ? Math.min(0, side) * 0.45 : side * offX, phone ? (compactAvatar ? 1.67 : 1.35) : -0.3, 0);
   const width = canvas.clientWidth;
-  const scale = phone ? 0.9 : width < 820 ? 0.76 : width < 980 ? 0.86 : width < 1120 ? 1 : 1.18;
+  const scale = phone ? (compactAvatar ? 0.64 : 0.9) : width < 820 ? 0.76 : width < 980 ? 0.86 : width < 1120 ? 1 : 1.18;
   group.scale.setScalar(scale);
 }
 
 function updateAvatarAttributes() {
   if (!geo) return;
   geo.setAttribute('aHead', new BufferAttribute(T.headMask || new Float32Array(count), 1));
+  geo.setAttribute('aHeadB', new BufferAttribute(T.educationHeadMask || T.headMask || new Float32Array(count), 1));
   geo.setAttribute('aGold', new BufferAttribute(T.portraitGold || new Float32Array(count), 1));
   geo.setAttribute('aFace', new BufferAttribute(T.faceMask || new Float32Array(count), 1));
 }
@@ -66,9 +68,45 @@ function startIntro() {
   intro = gsap.to(u.uIn, { value: 1, duration: 2, ease: 'power4.out' }); // power4.out is the closest GSAP match to --ease-out
 }
 
+function welcomeActive() {
+  const section = document.getElementById('welcome');
+  if (!section) return false;
+  const top = section.getBoundingClientRect().top + scrollY;
+  return scrollY >= top && scrollY < top + section.offsetHeight;
+}
+
+function educationProgress(progress) {
+  if (!geo) return;
+  const mix = motion ? Math.max(0, Math.min(1, progress / 0.18)) : 1;
+  const forming = mix < 0.999;
+  const sideT = Math.max(0, Math.min(1, mix / 0.38));
+  const sideProgress = sideT * sideT * (3 - 2 * sideT); // the avatar reaches the left before the gown finishes forming
+  gl.setTargets(forming ? 0 : 1, forming ? 1 : 2);
+  gl.setMix(forming ? mix : 0);
+  gl.setDensity(1);
+  gl.setSide(lerp(SIDES[0], SIDES[1], sideProgress));
+  u.uHead.value = 1;
+  u.uDis.value = motion ? 0.11 : 0;
+  u.uLocalDis.value = 0;
+}
+
 // Applies the latest (i, j, e): morph pair and mix, density, side, and how hard the points scatter on the way.
 function apply() {
   if (!geo) return;
+  if (chap.id === 'home' || welcomeActive()) {
+    gl.setTargets(0, 0);
+    gl.setMix(0);
+    gl.setDensity(1);
+    gl.setSide(SIDES[0]);
+    u.uHead.value = 1;
+    u.uDis.value = 0;
+    if (!welcomeActive()) u.uLocalDis.value = 0;
+    return;
+  }
+  if (chap.id === 'education') {
+    educationProgress(chap.progress ?? 0);
+    return;
+  }
   const { i, j, e } = chap;
   gl.setTargets(i, j);
   gl.setMix(e);
@@ -79,7 +117,9 @@ function apply() {
   u.uDis.value = motion ? 0.22 : 0;
 }
 document.addEventListener('jl:chapter', (ev) => { chap = ev.detail; apply(); }); // registered at import time: no event is missed
-document.addEventListener('jl:chapter', () => gl.setColor(getComputedStyle(document.documentElement).getPropertyValue('--ac')));
+document.addEventListener('jl:education-progress', (event) => {
+  if (chap.id === 'education') educationProgress(event.detail.progress);
+});
 document.addEventListener('jl:theme', (event) => {
   gl.setColor(event.detail.particle);
   gl.setAccent(event.detail.accent);
@@ -105,6 +145,7 @@ export const gl = {
   },
   setMix(e) { if (u) u.uMix.value = e; },
   setDensity(v) { if (u) u.uDen.value = v; },
+  setLocalDispersal(v) { if (u) u.uLocalDis.value = Math.max(0, Math.min(0.34, v)); },
   setSide(s) { side = s; if (group) place(); }, // -1 left, +1 right; fractions are fine
   setCameraPush(progress) {
     cameraPush = Math.max(0, Math.min(1, progress));
@@ -160,8 +201,8 @@ export async function initGL(onProgress = () => {}) {
     layout();
     const palette = {
       dark: { particle: '#18C75F', accent: '#59FFA0', face: '#E9EBEB' },
-      green: { particle: '#090A0F', accent: '#E9EBEB', face: '#E9EBEB' },
-      light: { particle: '#147E41', accent: '#090A0F', face: '#090A0F' },
+      green: { particle: '#090A0F', accent: '#18C75F', face: '#59FFA0' },
+      light: { particle: '#090A0F', accent: '#18C75F', face: '#59FFA0' },
     }[document.documentElement.dataset.theme] || { particle: '#18C75F', accent: '#59FFA0', face: '#E9EBEB' };
     gl.setColor(palette.particle);
     gl.setAccent(palette.accent);

@@ -132,9 +132,9 @@ export const BODY = [
   [0.035, sph(0.43, 0.78, -0.38, 0, 0.6, 1.15, 0.58)], // right upper arm
 ];
 
-// Home and Education share a fixed head group, so the neck pivot can turn the head without moving the torso.
+// Home and Education share the same face; the Education mask also carries its mortarboard around the neck pivot.
 export const HEAD_RATIO = 0.38;
-export const SIDES = [1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0];
+export const SIDES = [1, -1, 1, 1, 1, 0, 0, 0, 0, 0, 0];
 
 // The sample image is split at the neck before sampling. This preserves its profile while keeping head points
 // contiguous for the GPU mask. compress < 1 keeps the scene inside narrow phone viewports.
@@ -158,39 +158,52 @@ function samplePortrait(n, pool, segment = 'pixels', compress = 1, gold = new Fl
   return out;
 }
 
-function sampleGraduation(n, base, compress = 1) {
+function sampleGraduation(n, base, compress = 1, gold = new Float32Array(n)) {
   const out = base.slice();
   const headEnd = Math.round(n * HEAD_RATIO);
-  const capEnd = Math.round(n * 0.21);
+  const capStart = headEnd;
+  const capEnd = Math.min(n, headEnd + Math.round(n * 0.085));
+  const board = box(0.96, 0.055, 0.78, 0, 1.03, 0);
+  const diamondBoard = (points, offset) => {
+    board(points, offset);
+    const x = points[offset], z = points[offset + 2], diagonal = Math.SQRT1_2;
+    points[offset] = (x - z) * diagonal;
+    points[offset + 2] = (x + z) * diagonal;
+  };
   const cap = pick([
-    [7, box(1.62, 0.07, 1.16, 0, 1.56, 0)],
-    [2, box(0.64, 0.24, 0.64, 0, 1.42, 0)],
-    [1, cyl(0.014, 0.5, 0.68, 1.27, 0)],
+    [8, diamondBoard],
+    [2, box(0.62, 0.2, 0.62, 0, 0.92, 0)],
   ]);
+  const robe = (out, offset) => {
+    const angle = rand() * TAU;
+    const t = rand();
+    const radius = 0.56 + (1 - t) * 0.16;
+    out[offset] = Math.cos(angle) * radius;
+    out[offset + 1] = 0.24 - t * 1.5;
+    out[offset + 2] = Math.sin(angle) * radius * 0.62;
+  };
   const gown = pick([
-    [7, cone(0.86, 1.82, 0, -0.68, 0)],
-    [2, sph(0.72, 0, -0.1, 0, 1.18, 0.43, 0.68)],
-    [1, box(1.5, 0.1, 0.48, 0, -1.43, 0)],
+    [6, robe],
+    [4, sph(0.72, 0, -0.1, 0, 1.12, 0.42, 0.65)],
   ]);
-  const stole = rect(0.2, 1.42, 0.15, -0.48, 0.47);
-  const diploma = pick([
-    [3, cyl(0.1, 0.43, 0.78, -0.1, 0.52)],
-    [1, box(0.24, 0.12, 0.16, 0.78, -0.1, 0.52)],
+  const stole = pick([
+    [1, rect(0.15, 1.3, -0.15, -0.42, 0.5)],
+    [1, rect(0.15, 1.3, 0.15, -0.42, 0.5)],
   ]);
+  const stoleEnd = capEnd + Math.round(n * 0.12);
   for (let i = 0; i < n; i++) {
     const o = i * 3;
-    if (i < capEnd) cap(out, o);
-    else if (i >= headEnd) {
-      const r = (i - headEnd) / Math.max(1, n - headEnd);
-      (r < 0.78 ? gown : r < 0.9 ? stole : diploma)(out, o);
-    }
-    if (i < capEnd || i >= headEnd) {
+    if (i >= headEnd) {
+      if (i < capEnd) cap(out, o);
+      else if (i < stoleEnd) stole(out, o);
+      else gown(out, o);
       out[o] *= compress;
       out[o + 1] *= compress;
       out[o + 2] *= compress;
+      gold[i] = 0;
     }
   }
-  return out;
+  return { positions: out, capStart, capEnd };
 }
 
 function sampleHelix(n, compress = 1, phase = 0) {
@@ -220,11 +233,14 @@ export function buildTargets(n, compress = 1, pool = portraitPool) {
     body.set(head);
     body.set(torso, headCount * 3);
   }
-  const education = sampleGraduation(n, body, compress);
+  const graduation = sampleGraduation(n, body, compress, tone);
+  const education = graduation.positions;
   const field = Array.from({ length: 9 }, (_, i) => sampleHelix(n, compress, i * 0.045));
   const targets = [body, education, ...field];
   targets.headMask = new Float32Array(n);
   targets.headMask.fill(1, 0, headCount);
+  targets.educationHeadMask = targets.headMask.slice();
+  targets.educationHeadMask.fill(1, graduation.capStart, graduation.capEnd);
   targets.portraitGold = tone;
   targets.faceMask = new Float32Array(n);
   // Keep the small facial points out of the cap range and preserve them in the Education morph.

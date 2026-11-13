@@ -16,7 +16,7 @@ export function initNav() {
   list.innerHTML = NAV_ITEMS.map((item, index) => {
     const start = item.target
       ? '<a role="listitem" href="#' + item.target + '" data-target="' + item.target + '">'
-      : '<button role="listitem" type="button" data-about-me aria-disabled="true">';
+      : '<button role="listitem" type="button" data-about-me aria-haspopup="dialog">';
     const end = item.target ? '</a>' : '</button>';
     const separator = item.target ? '' : '<span class="nav-divider" role="separator" aria-orientation="horizontal"></span>';
     return separator + start + '<span class="nav-number">' + String(index + 1).padStart(2, '0') + '</span><span>' + item.label + '</span>' + end;
@@ -64,10 +64,17 @@ export function initNav() {
   shell.addEventListener('focusout', deferClose);
   panel.addEventListener('click', (event) => {
     const link = event.target.closest('[data-target]');
-    if (!link) return;
-    event.preventDefault();
-    close();
-    scrollToChapter(link.dataset.target);
+    if (link) {
+      event.preventDefault();
+      close();
+      scrollToChapter(link.dataset.target);
+      return;
+    }
+    const about = event.target.closest('[data-about-me]');
+    if (about) {
+      close();
+      document.dispatchEvent(new CustomEvent('jl:about-open', { detail: { trigger: about } }));
+    }
   });
   document.addEventListener('pointerdown', (event) => {
     if (open && !shell.contains(event.target)) close();

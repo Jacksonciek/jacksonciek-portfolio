@@ -6,7 +6,7 @@ import { addCounters, resetCounters } from './counters.js';
 gsap.registerPlugin(ScrollTrigger);
 const GAPS = [0.010, 0.022, 0.014, 0.019, 0.012]; // uneven delays between .fx items, in progress units
 let ctx = null;
-let chapterState = { i: 0, j: 1, e: 0 };
+let chapterState = { i: 0, j: 1, e: 0, id: 'home', progress: 0 };
 
 export function getCurrentChapter() { return chapterState; }
 
@@ -40,9 +40,12 @@ function build() {
     document.querySelectorAll('.ch').forEach((ch, i, all) => {
       const words = [...ch.querySelectorAll('.rv')].flatMap(splitWords);
       const fx = ch.querySelectorAll('.fx');
+      const notifyEducation = (self) => {
+        if (ch.id === 'education') document.dispatchEvent(new CustomEvent('jl:education-progress', { detail: { progress: self.progress } }));
+      };
       const tl = gsap.timeline({
         defaults: { ease: 'none' }, // scrubbed motion has no curve; Lenis does the smoothing
-        scrollTrigger: { trigger: ch, start: 'top top', end: 'bottom bottom', scrub: true },
+        scrollTrigger: { trigger: ch, start: 'top top', end: 'bottom bottom', scrub: true, onUpdate: notifyEducation, onRefresh: notifyEducation },
       });
       if (i > 0) { // enter over 0 to .18 (Home is already in place at progress 0; Stage 5 owns its entrance)
         if (words.length) tl.fromTo(words, { yPercent: 130 }, { yPercent: 0, duration: 0.07, stagger: 0.008 }, 0);
@@ -67,12 +70,13 @@ function initEmitter() {
     let i = 0;
     while (i < secs.length - 1 && s >= tops[i + 1]) i++;
     const j = Math.min(i + 1, secs.length - 1);
-    const e = i === j ? 0 : smooth(0.7, 1, (s - tops[i]) / (hs[i] - innerHeight));
+    const progress = Math.max(0, Math.min(1, (s - tops[i]) / Math.max(1, hs[i] - innerHeight)));
+    const e = i === j ? 0 : smooth(0.7, 1, progress);
     const key = `${i}|${j}|${e.toFixed(3)}`;
-    chapterState = { i, j, e };
+    chapterState = { i, j, e, id: secs[i]?.id, progress };
     if (key === last) return;
     last = key;
-    document.dispatchEvent(new CustomEvent('jl:chapter', { detail: { i, j, e, id: secs[i]?.id } }));
+    document.dispatchEvent(new CustomEvent('jl:chapter', { detail: chapterState }));
   };
   const measure = (s = scrollY) => {
     tops = secs.map((section) => section.getBoundingClientRect().top + scrollY);

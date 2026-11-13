@@ -2,12 +2,14 @@ import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { motionOn } from '../core/motion.js';
 import { scrollToChapter } from '../core/scroll.js';
+import { MOTION_TOKENS } from '../config.js';
+import { setThemeProgress } from '../core/theme.js';
 import toolkit from '../content/toolkit.json';
 
 gsap.registerPlugin(ScrollTrigger);
 const clamp01 = (v) => Math.max(0, Math.min(1, v));
 const smooth = (a, b, x) => { const t = clamp01((x - a) / (b - a)); return t * t * (3 - 2 * t); };
-let ctx, gl, contactGlyphs = [], contactGlyphWidths = [];
+let ctx, gl, welcomeTimeline, contactGlyphs = [], contactGlyphWidths = [];
 
 function prepareDecorativeContent() {
   const railWindow = document.querySelector('[data-project-rail-window]');
@@ -232,6 +234,32 @@ function contact(t) {
   });
 }
 
+function updateWelcome(progress) {
+  const value = motionOn() ? clamp01(progress) : (progress >= 0.94 ? 1 : 0);
+  setThemeProgress(value);
+  gl?.setLocalDispersal(motionOn() ? Math.sin(Math.PI * value) * 0.18 : 0);
+}
+
+function setupWelcomeTimeline() {
+  const section = document.getElementById('welcome');
+  if (!section || welcomeTimeline) return;
+  const state = { progress: 0 };
+  welcomeTimeline = gsap.timeline({
+    scrollTrigger: {
+      trigger: section, start: 'top top', end: 'bottom bottom', scrub: MOTION_TOKENS.scroll.scrub,
+      onUpdate: (self) => { if (!motionOn()) updateWelcome(self.progress); },
+      onRefresh: (self) => { if (!motionOn()) updateWelcome(self.progress); },
+    },
+  });
+  welcomeTimeline.to(state, { progress: 1, duration: 1, ease: 'none', onUpdate: () => updateWelcome(state.progress) }, 0);
+  document.addEventListener('jl:motion', () => {
+    if (motionOn()) return;
+    const top = section.getBoundingClientRect().top + scrollY;
+    const progress = clamp01((scrollY - top) / Math.max(1, section.offsetHeight - innerHeight));
+    updateWelcome(progress);
+  });
+}
+
 function resetStatic() {
   document.querySelector('#experience')?.classList.remove('is-scrolling');
   document.querySelectorAll('[data-experience-card]').forEach((card) => {
@@ -304,6 +332,7 @@ export function initChapterFeatures() {
   prepareDecorativeContent();
   import('../gl/scene.js').then((scene) => {
     gl = scene.gl;
+    setupWelcomeTimeline();
     resetStatic();
     if (motionOn()) build();
     document.addEventListener('jl:motion', (e) => {

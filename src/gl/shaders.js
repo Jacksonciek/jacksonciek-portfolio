@@ -21,9 +21,10 @@ const vert = /* glsl */ `
 attribute vec3 aB;
 attribute float aR;
 attribute float aHead;
+attribute float aHeadB;
 attribute float aGold;
 attribute float aFace;
-uniform float uMix, uIn, uPR, uDen, uDis, uTime, uHead;
+uniform float uMix, uIn, uPR, uDen, uDis, uLocalDis, uTime, uHead;
 uniform float uRepel;
 uniform vec2 uLook, uPointer, uViewport;
 varying float vG;
@@ -42,6 +43,7 @@ vec3 dir(float s) {
 void main() {
   vec3 p = mix(position, aB, uMix);
   p += dir(aR) * sin(3.14159265 * uMix) * uDis * (1.2 + aR);
+  p += dir(aR + 7.1) * uLocalDis;
   p += vec3(sin(uTime * (.4 + aR * .8) + aR * 40.), cos(uTime * (.5 + aR * .7) + aR * 70.), sin(uTime * (.3 + aR * .9) + aR * 25.)) * .015;
 
   // Rotate only head and cap points around the neck. The torso follows the scroll morph directly.
@@ -50,7 +52,8 @@ void main() {
   float hx = clamp(uLook.y, -1., 1.) * .12;
   float cy = cos(hy), sy = sin(hy), cx = cos(hx), sx = sin(hx);
   vec3 turnedHead = vec3(hp.x * cy + hp.z * sy, hp.y * cx - hp.z * sx, -hp.x * sy + hp.z * cy);
-  p = mix(p, vec3(0., .16, 0.) + turnedHead, aHead * uHead);
+  float headMask = mix(aHead, aHeadB, uMix);
+  p = mix(p, vec3(0., .16, 0.) + turnedHead, headMask * uHead);
 
   // Intro: every point flies in from a scattered spot. uIn arrives already eased from GSAP; the points start staggered by aR.
   vec3 sc = dir(aR + .5) * (2. + 4. * fract(aR * 57.3));
@@ -106,7 +109,7 @@ export function makeMaterial() {
     uniforms: {
       uMix: { value: 0 }, uIn: { value: 0 }, uPR: { value: 1 }, uC: { value: new Vector3(1, 1, 1) },
       uAccent: { value: new Vector3(0.35, 1, 0.63) }, uFace: { value: new Vector3(0.91, 0.94, 0.94) },
-      uDen: { value: 1 }, uDis: { value: 1 }, uHead: { value: 1 },
+      uDen: { value: 1 }, uDis: { value: 1 }, uLocalDis: { value: 0 }, uHead: { value: 1 },
       uTime: { value: 0 }, uA: { value: makeAtlas() }, uLook: { value: new Vector2() },
       uPointer: { value: new Vector2() }, uViewport: { value: new Vector2(1, 1) }, uRepel: { value: 0 },
     },

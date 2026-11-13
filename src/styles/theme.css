@@ -27,10 +27,12 @@
   --white-offset:100%;
   --line-opacity:0;
   --line-shift:0vw;
+  --line-drift:0vh;
 }
 :root[data-theme="green"]{--bg:#147e41;--ac:#090a0f;--tx:#090a0f;--ink:#090a0f;--splash:#090a0f;--glass:rgba(9,10,15,.7);--glass-line:rgba(9,10,15,.2)}
 :root[data-theme="light"]{color-scheme:light;--bg:#e9ebeb;--ac:#147e41;--tx:#111316;--ink:#e9ebeb;--splash:#090a0f;--glass:rgba(245,247,248,.7);--glass-line:rgba(17,19,22,.18);--glass-highlight:rgba(255,255,255,.72);--line-soft:rgba(17,19,22,.14)}
-html{background:#090a0f}
+html{background:var(--gutter-bg,#090a0f)}
+html::-webkit-scrollbar-track{background:var(--gutter-bg,#090a0f)}
 body{background:transparent;color:var(--tx)}
 body::before{display:none}
 #hero-video{display:none}
@@ -39,7 +41,7 @@ body::before{display:none}
 .theme-green,.theme-white,.theme-lines{position:absolute;inset:0;pointer-events:none}
 .theme-green{transform:translate3d(0,var(--green-offset),0);background:linear-gradient(180deg,transparent 0%,#0c291b 15%,#147e41 56%,#18c75f 100%);will-change:transform}
 .theme-white{transform:translate3d(0,var(--white-offset),0);background:linear-gradient(180deg,transparent 0%,#cdf0db 15%,#e9ebeb 46%,#e9ebeb 100%);will-change:transform}
-.theme-lines{opacity:var(--line-opacity);transform:translate3d(var(--line-shift),0,0);background:repeating-linear-gradient(154deg,transparent 0 103px,rgba(0,255,112,.46) 104px,transparent 105px 201px),repeating-linear-gradient(154deg,transparent 0 191px,rgba(233,235,235,.28) 192px,transparent 193px 311px);mix-blend-mode:screen;will-change:transform,opacity}
+.theme-lines{opacity:var(--line-opacity);transform:translate3d(var(--line-shift),var(--line-drift),0);background:repeating-linear-gradient(154deg,transparent 0 103px,rgba(0,255,112,.46) 104px,transparent 105px 201px),repeating-linear-gradient(154deg,transparent 0 191px,rgba(233,235,235,.28) 192px,transparent 193px 311px);mix-blend-mode:screen;will-change:transform,opacity}
 .theme-final-white{position:absolute;inset:0;background:#e9ebeb;transform:scaleY(var(--final-white-scale,0));transform-origin:bottom;will-change:transform}
 html[data-theme="light"] .theme-lines{mix-blend-mode:multiply}
 .nav-shell{position:fixed;z-index:30;top:max(18px,calc(env(safe-area-inset-top) + 12px));left:50%;width:min(820px,calc(100vw - 32px));transform:translateX(-50%);color:#f4f5f4}

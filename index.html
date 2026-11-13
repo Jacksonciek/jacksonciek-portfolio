@@ -51,6 +51,7 @@
         <div class="btns fx">
           <a class="btn btn--primary" data-link data-disperse href="/ai-lab">View AI lab</a>
           <a class="btn btn--secondary" data-link data-disperse href="/design">View design</a>
+          <button class="btn btn--secondary" type="button" data-about-me-open>About Me</button>
         </div>
         <ul class="stats fx">
           <li><b>4.00</b> CGPA, full scholarship</li>
@@ -59,6 +60,14 @@
         </ul>
         <p class="hint fx">Scroll to follow the story</p>
       </div></div>
+    </section>
+
+    <section class="welcome-scene" id="welcome" aria-labelledby="t-welcome">
+      <div class="welcome-stage">
+        <p class="welcome-kicker">WELCOME</p>
+        <h2 id="t-welcome">Welcome.<br><em>Let’s make this matter.</em></h2>
+        <p class="welcome-prompt">Scroll to begin</p>
+      </div>
     </section>
 
     <section id="education" class="ch R education-chapter" data-g="id" aria-labelledby="t-education">
@@ -244,6 +253,63 @@
       </div></div>
     </section>
   </main>
+
+  <div id="about-me-dialog" class="about-dialog" hidden>
+    <div class="about-panel" role="dialog" aria-modal="true" aria-labelledby="about-title" aria-describedby="about-summary">
+      <header class="about-header">
+        <p class="about-eyebrow">ABOUT ME</p>
+        <button class="about-close" type="button" data-about-close aria-label="Close About Me">×</button>
+      </header>
+      <div class="about-grid">
+        <div class="about-facts" aria-label="Education and teaching highlights">
+          <article><strong>4.00</strong><span>CGPA</span></article>
+          <article><strong>Full</strong><span>merit scholarship</span></article>
+          <article><strong>200+</strong><span>students taught</span></article>
+        </div>
+        <div class="about-focus" aria-hidden="true">
+          <span class="about-orbit about-orbit-a"></span><span class="about-orbit about-orbit-b"></span>
+          <span class="about-focus-core"></span>
+          <p>AI <i>×</i> DESIGN <i>×</i> VIDEO</p>
+        </div>
+        <div class="about-globe-panel">
+          <p class="about-card-label">Systems, stories, and motion</p>
+          <div class="about-globe-drag" data-globe-drag role="img" tabindex="0" aria-label="Interactive globe illustration. Drag or use the arrow keys to rotate it.">
+            <div class="about-globe-turn">
+              <svg class="about-globe" viewBox="0 0 320 320" aria-hidden="true">
+                <circle class="globe-sphere" cx="160" cy="160" r="136" />
+                <ellipse cx="160" cy="160" rx="58" ry="136" />
+                <ellipse cx="160" cy="160" rx="104" ry="136" />
+                <ellipse cx="160" cy="160" rx="136" ry="44" />
+                <ellipse cx="160" cy="160" rx="136" ry="92" />
+                <path class="globe-route" d="M53 111c30 15 58 21 91 16 42-7 76-19 121-12M42 205c39-17 71-19 111-10 43 10 82 9 125-8" />
+                <g class="globe-points"><circle cx="83" cy="121" r="3"/><circle cx="146" cy="130" r="3"/><circle cx="246" cy="114" r="3"/><circle cx="102" cy="201" r="3"/><circle cx="213" cy="190" r="3"/></g>
+              </svg>
+            </div>
+          </div>
+        </div>
+        <div class="about-portrait" aria-hidden="true">
+          <span class="portrait-halo"></span><span class="portrait-head"></span><span class="portrait-shoulders"></span>
+          <span class="portrait-points"></span>
+          <span class="about-card-label">JACKSON LAWRENCE</span>
+        </div>
+        <div class="about-story">
+          <p class="about-eyebrow">CREATIVE TECHNOLOGIST</p>
+          <h2 id="about-title">The model and the experience around it.</h2>
+          <p id="about-summary">I bridge AI engineering and design, bringing video editing into the same practice. I’m a Computer Science graduate with a 4.00 CGPA and a full merit scholarship.</p>
+        </div>
+        <div class="about-side-art" aria-hidden="true">
+          <span class="side-art-ring"></span><span class="side-art-line"></span><span class="side-art-point"></span>
+          <p>ENGINEER<br>DESIGNER<br>EDITOR</p>
+        </div>
+        <div class="about-toolbox-drag" data-toolbox-drag tabindex="0" role="group" aria-label="Moveable areas of work. Drag or use the arrow keys to move.">
+          <div class="about-toolbox-inner">
+            <div class="about-toolbox-copy"><p class="about-eyebrow">ACROSS DISCIPLINES</p><h3>One practice, many tools.</h3></div>
+            <div class="about-tool-tags"><span>AI engineering</span><span>Web development</span><span>Digital design</span><span>Video editing</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <footer class="foot">
     <section class="ai-office" aria-labelledby="office-title">
