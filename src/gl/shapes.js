@@ -226,5 +226,30 @@ export function buildTargets(n, compress = 1, pool = portraitPool) {
   targets.headMask = new Float32Array(n);
   targets.headMask.fill(1, 0, headCount);
   targets.portraitGold = tone;
+  targets.faceMask = new Float32Array(n);
+  // Keep the small facial points out of the cap range and preserve them in the Education morph.
+  const detailStart = Math.round(n * 0.21);
+  const detailCount = Math.min(Math.max(45, Math.round(n * 0.0022)), headCount - detailStart);
+  for (let j = 0; j < detailCount; j++) {
+    const section = Math.floor((j / detailCount) * 3);
+    const t = (j - Math.floor((j / detailCount) * 3) * (detailCount / 3)) / (detailCount / 3);
+    let x, y;
+    if (section === 0) { // one softly arched eye, read in the profile view
+      x = -0.42 + t * 0.14;
+      y = 0.75 + Math.sin(t * Math.PI) * 0.012;
+    } else if (section === 1) { // bridge to tip of the nose
+      x = -0.51 - t * 0.13;
+      y = 0.68 - t * 0.1;
+    } else { // a short mouth line
+      x = -0.51 + t * 0.11;
+      y = 0.45 + Math.sin(t * Math.PI) * 0.004;
+    }
+    const index = detailStart + j, o = index * 3;
+    body[o] = targets[1][o] = x * compress;
+    body[o + 1] = targets[1][o + 1] = y * compress;
+    body[o + 2] = targets[1][o + 2] = 0.34 * compress;
+    targets.portraitGold[index] = 0;
+    targets.faceMask[index] = 1;
+  }
   return targets;
 }

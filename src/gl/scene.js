@@ -24,6 +24,7 @@ function layout() {
   renderer.setPixelRatio(Math.min(devicePixelRatio, phone ? 1.5 : 2));
   renderer.setSize(canvas.clientWidth, canvas.clientHeight, false); // CSS owns the canvas size
   camera.aspect = canvas.clientWidth / canvas.clientHeight;
+  u.uViewport.value.set(canvas.clientWidth, canvas.clientHeight);
   baseZ = camera.aspect < 1 ? 6.4 : 5;
   camera.position.z = baseZ * (1 - cameraPush * 0.34);
   camera.updateProjectionMatrix();
@@ -44,6 +45,7 @@ function updateAvatarAttributes() {
   if (!geo) return;
   geo.setAttribute('aHead', new BufferAttribute(T.headMask || new Float32Array(count), 1));
   geo.setAttribute('aGold', new BufferAttribute(T.portraitGold || new Float32Array(count), 1));
+  geo.setAttribute('aFace', new BufferAttribute(T.faceMask || new Float32Array(count), 1));
 }
 
 function frame(_, dt) {
@@ -53,6 +55,8 @@ function frame(_, dt) {
   const g = ptr.update(s, motion);
   if (motion) u.uTime.value += s;
   u.uLook.value.set(g.x, g.y);
+  u.uPointer.value.set(g.pointerX, g.pointerY);
+  u.uRepel.value = g.active;
   renderer.render(scene, camera);
 }
 
@@ -79,6 +83,7 @@ document.addEventListener('jl:chapter', () => gl.setColor(getComputedStyle(docum
 document.addEventListener('jl:theme', (event) => {
   gl.setColor(event.detail.particle);
   gl.setAccent(event.detail.accent);
+  gl.setFace(event.detail.face);
 });
 
 // Phones pull the objects toward the centered figure so they never clip. Same point count, new positions.
@@ -112,6 +117,10 @@ export const gl = {
   setAccent(hex) {
     const n = parseInt(hex.trim().slice(1), 16);
     if (u) u.uAccent.value.set(((n >> 16) & 255) / 255, ((n >> 8) & 255) / 255, (n & 255) / 255);
+  },
+  setFace(hex) {
+    const n = parseInt(hex.trim().slice(1), 16);
+    if (u) u.uFace.value.set(((n >> 16) & 255) / 255, ((n >> 8) & 255) / 255, (n & 255) / 255);
   },
 };
 
@@ -149,9 +158,14 @@ export async function initGL(onProgress = () => {}) {
     onProgress(0.6);
 
     layout();
-    const lightTheme = document.documentElement.dataset.theme === 'light';
-    gl.setColor(lightTheme ? '#147E41' : '#18C75F');
-    gl.setAccent(lightTheme ? '#090A0F' : '#59FFA0');
+    const palette = {
+      dark: { particle: '#18C75F', accent: '#59FFA0', face: '#E9EBEB' },
+      green: { particle: '#090A0F', accent: '#E9EBEB', face: '#E9EBEB' },
+      light: { particle: '#147E41', accent: '#090A0F', face: '#090A0F' },
+    }[document.documentElement.dataset.theme] || { particle: '#18C75F', accent: '#59FFA0', face: '#E9EBEB' };
+    gl.setColor(palette.particle);
+    gl.setAccent(palette.accent);
+    gl.setFace(palette.face);
     apply(); // start at the current scroll position (the page may load scrolled)
     await renderer.compileAsync(scene, camera);
     points.visible = false; // stays hidden until the splash is gone, then the intro flies it in

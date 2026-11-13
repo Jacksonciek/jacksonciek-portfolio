@@ -13,9 +13,11 @@ function publishTheme(next) {
   theme = next;
   root.dataset.theme = next;
   root.style.colorScheme = next === 'light' ? 'light' : 'dark';
-  const colors = next === 'light'
-    ? { particle: '#147E41', accent: '#090A0F' }
-    : { particle: '#18C75F', accent: '#59FFA0' };
+  const colors = {
+    dark: { particle: '#18C75F', accent: '#59FFA0', face: '#E9EBEB' },
+    green: { particle: '#090A0F', accent: '#E9EBEB', face: '#E9EBEB' },
+    light: { particle: '#147E41', accent: '#090A0F', face: '#090A0F' },
+  }[next];
   document.dispatchEvent(new CustomEvent('jl:theme', {
     detail: { theme: next, progress, ...colors },
   }));

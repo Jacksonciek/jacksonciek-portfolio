@@ -1,15 +1,15 @@
 # Revision progress
-- Current step: R2 Avatar. R0 intake/audit and R1 Foundation are complete.
-- R0 inventory: concept.md; images about_me.png, ai-office.png, avatar-3d.png, navbar.png, toolkit.png; videos avatar 14.442s, background 13.278s, click 4.796s, experience 9.203s, footer 14.469s, graphic_design 10.990s, macbook 9.736s, navbar 11.377s, projects 38.644s, video 9.161s; no extracted-frames folder.
-- Reference mapping: ai-office.png is kantor-ai.png; avatar-3d.png is avatar; missing graduation-toga reference and isi_toolkit.png.
-- R0 audit: substantial changes remain for Welcome/Education/About Me, horizontal Experience, vertical Projects, laptop, staged design/video, wordmark/Skills, office footer and single-page routing.
-- R1 references: Apple captured with Playwright; tibdigital.com timed out. Notes and sampled reference captures are in docs/reference-notes and ignored .ref-cache.
-- R1 foundation: layered black/green/pale theme API, adaptive glass nav panel with ordered links and empty frame, reduced-motion preference handling, 56px click ring, no toggle, Toolkit label changed to Skills.
-- R1 verification: Vite build passes; Playwright checked 1440, 1024, 768 and 390 layouts, nav hover/focus/touch/Escape, theme endpoints and a clean console.
-- R1 limits: Edge reports prefers-reduced-transparency unsupported; final background progress is an API for R3 to connect. Vite warns about the existing 539 kB WebGL chunk.
+- Current step: R3 Welcome, Education and About Me. R0, R1 and R2 are complete.
+- R0 inventory: concept.md; images about_me.png, ai-office.png, avatar-3d.png, navbar.png, toolkit.png; ten reference videos; no extracted-frames folder.
+- R0 mapping/audit: ai-office.png is kantor-ai.png; graduation-toga and isi_toolkit.png are missing. Welcome/Education/About, Experience, Projects, laptop, staged design/video, Skills, footer and routing need revision.
+- R1 references: Apple captured with Playwright; tibdigital.com timed out. Notes and sampled captures are in docs/reference-notes and ignored .ref-cache.
+- R1 foundation: layered black/green/pale theme API, adaptive glass navigation, reduced-motion handling, 56px click ring, no motion toggle and visible Skills label.
+- R1 verification/limits: Vite build and Playwright 1440/1024/768/390, navigation, theme and console checks passed. Edge cannot emulate prefers-reduced-transparency; R3 still needs to wire background progress. Existing WebGL chunk warning remains.
 - R1 skills: apple-design, animation-performance; UI Pro Max glassmorphism, GSAP hover and scroll-reveal queries.
-- R2 next: inspect only avatar.mp4, document legibility/morph/cursor findings, then implement face and pointer behavior.
-- R3: welcome, education, toga overlay, About Me panel and splash hand-off; toga reference is missing.
-- R4/R5: horizontal Experience; Projects intro, raised vertical showcase and View more, with particle lifecycle.
-- R6/R7: MacBook transition, staged design/video, JACKSONCIEK mark and Technical Skills; skills image/content reference is missing.
-- R8/R9: six-station AI office footer, responsive/accessibility/performance polish, README and final reference/browser verification.
+- R2 references: avatar.mp4, avatar-3d.png and ALLER Studio hero inspected; notes in docs/reference-notes/avatar.md. Source face is featureless, so restrained particle landmarks were added for the requested legibility.
+- R2 implementation/skills: separate head gaze, smoothed near-field cursor repulsion and three point landmarks in one BufferGeometry/THREE.Points; animation-performance and UI Pro Max Three.js particle guidance.
+- R2 verification: Vite build; Edge Playwright at 1440/1024/768/390 with WebGL and clean console; reduced motion at 390; interactive desktop sample 144 FPS (7.4ms worst). Physical-device FPS not measured; transparency preference unsupported in Edge.
+- R3: welcome beat, background transition, toga avatar left, About Me panel and splash hand-off; toga reference is missing.
+- R4/R5: horizontal Experience; Projects intro, raised vertical showcase and View more with particle lifecycle.
+- R6/R7: MacBook transition, staged design/video, JACKSONCIEK mark and Technical Skills; toolkit image/content reference is missing.
+- R8/R9: six-station AI office footer; responsive/accessibility/performance polish, README and final reference/browser verification.
